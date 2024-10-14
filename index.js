@@ -273,20 +273,16 @@ async (accessToken, refreshToken, profile, cb) => {
 }
 ));
 
-// Route xử lý quên mật khẩu
+//handle forgot password
 app.post('/forgot-password', async (req, res) => {
   const email = req.body.email;
   try {
-    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
     const result = await db.query("SELECT * FROM users WHERE email=$1 AND password!=$2",[email,"google"])
-
     if (result.rows.length===0) {
       return res.status(404).send('Email does not exist!');
     }else{
-// Tạo mật khẩu mới (ví dụ sử dụng 8 ký tự ngẫu nhiên)
-    const newPassword = Math.random().toString(36).slice(-8);
 
-    // Mã hóa mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+    const newPassword = Math.random().toString(36).slice(-8);
     bcrypt.hash(newPassword, saltRounds, async (err, hash) => {
       if (err) {
         console.error("Error hashing password:", err);
@@ -298,16 +294,15 @@ app.post('/forgot-password', async (req, res) => {
       }
     });
 
-    // Cấu hình dịch vụ email với nodemailer
+    // send email with nodemailer
     let transporter = nodemailer.createTransport({
-      service: 'gmail', // Sử dụng Gmail, có thể cấu hình khác
+      service: 'gmail', 
       auth: {
         user: process.env.MY_GOOGLE_ACCOUNT,    
         pass: process.env.MY_GOOGLE_PASSWORD    
       }
     });
 
-    // Cấu hình nội dung email
     let mailOptions = {
       from: process.env.MY_GOOGLE_ACCOUNT,
       to: email,
@@ -315,7 +310,6 @@ app.post('/forgot-password', async (req, res) => {
       text: `Your new password is: ${newPassword}`
     };
 
-    // Gửi email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error(error);
