@@ -5,8 +5,10 @@ import bcrypt from "bcrypt";
 import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
+import FacebookStrategy from "passport-facebook";
 import session from "express-session";
 import env from "dotenv";
+import nodemailer from "nodemailer"
 
 const app = express();
 const port = 3000;
@@ -100,6 +102,22 @@ app.get(
     failureRedirect: "/login",
   })
 );
+//login by facebook, using OAuth
+app.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", {
+    scope: ["email", "public_profile"],
+  })
+);
+
+app.get(
+  "/auth/facebook/secrets",
+  passport.authenticate("facebook", {
+    successRedirect: "/secrets",
+    failureRedirect: "/login",
+  })
+);
+
 
 app.post(
   "/login",
@@ -119,7 +137,8 @@ app.post("/register", async (req, res) => {
     ]);
 
     if (checkResult.rows.length > 0) {
-      req.redirect("/login");
+      res.redirect("/register");
+      console.log("Failed! Username already exists");
     } else {
       bcrypt.hash(password, saltRounds, async (err, hash) => {
         if (err) {
@@ -131,7 +150,7 @@ app.post("/register", async (req, res) => {
           );
           const user = result.rows[0];
           req.login(user, (err) => {
-            console.log("success");
+            console.log("Success");
             res.redirect("/secrets");
           });
         }
@@ -225,6 +244,92 @@ passport.use(
     }
   )
 );
+//run facebook-passport
+passport.use(new FacebookStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET,
+  callbackURL: "http://localhost:3000/auth/facebook/secrets",
+  profileFields: ['id', 'displayName', 'photos', 'email']
+},
+async (accessToken, refreshToken, profile, cb) => {
+  try {
+    console.log(profile);
+  
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [
+      profile.displayName,
+    ]);
+    if (result.rows.length === 0) {
+      const newUser = await db.query(
+        "INSERT INTO users (email, password) VALUES ($1, $2)",
+        [profile.displayName, "facebook"]
+      );
+      return cb(null, newUser.rows[0]);
+    } else {
+      return cb(null, result.rows[0]);
+    }
+  } catch (err) {
+    return cb(err);
+  }
+}
+));
+
+// Route xử lý quên mật khẩu
+app.post('/forgot-password', async (req, res) => {
+  const email = req.body.email;
+  try {
+    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    const result = await db.query("SELECT * FROM users WHERE email=$1 AND password!=$2",[email,"google"])
+
+    if (result.rows.length===0) {
+      return res.status(404).send('Email does not exist!');
+    }else{
+// Tạo mật khẩu mới (ví dụ sử dụng 8 ký tự ngẫu nhiên)
+    const newPassword = Math.random().toString(36).slice(-8);
+
+    // Mã hóa mật khẩu mới trước khi lưu vào cơ sở dữ liệu
+    bcrypt.hash(newPassword, saltRounds, async (err, hash) => {
+      if (err) {
+        console.error("Error hashing password:", err);
+      } else {
+        db.query(
+          "UPDATE users SET password=$1 WHERE email=$2",
+          [hash, email]
+        );
+      }
+    });
+
+    // Cấu hình dịch vụ email với nodemailer
+    let transporter = nodemailer.createTransport({
+      service: 'gmail', // Sử dụng Gmail, có thể cấu hình khác
+      auth: {
+        user: process.env.MY_GOOGLE_ACCOUNT,    
+        pass: process.env.MY_GOOGLE_PASSWORD    
+      }
+    });
+
+    // Cấu hình nội dung email
+    let mailOptions = {
+      from: process.env.MY_GOOGLE_ACCOUNT,
+      to: email,
+      subject: 'Password Reset Request',
+      text: `Your new password is: ${newPassword}`
+    };
+
+    // Gửi email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Error sending!');
+      }
+      res.redirect("/login");
+      console.log("New password sent!")
+    });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error!');
+  }
+});
 
 passport.serializeUser((user, cb) => {
   cb(null, user);

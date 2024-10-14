@@ -19,7 +19,20 @@
                 <input type="password" class="form-control" name="password">
               </div>
               <button type="submit" class="btn btn-dark">Login</button>
+              <button type="button" class="btn btn-link" id="forgot-password-btn">Forgot password?</button>
             </form>
+
+             <!-- Div to show forgot password action -->
+          <form action="/forgot-password" method="POST">
+          <div id="forgot-password-action" class="mt-3" style="display: none;">
+            <p>Please enter here and we will send new password to your email.</p>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" name="email" required>
+            </div>
+            <button type="submit" class="btn btn-dark" style="margin-right: 15px;">Send</button>
+            <button type="button" class="btn btn-dark" id="cancel-forgot-password">Cancel</button>
+          </div>
 
           </div>
         </div>
@@ -34,9 +47,31 @@
             </a>
           </div>
         </div>
+        <div class="card">
+          <div class="card-body">
+            <a class="btn btn-block" href="/auth/facebook" role="button">
+              <i class="fab fa-facebook"></i>
+              Sign In with Facebook
+            </a>
+          </div>
+        </div>
       </div>
 
     </div>
   </div>
+  <script>
+    // JavaScript to toggle forgot password div
+    const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+    const forgotPasswordAction = document.getElementById('forgot-password-action');
+    const cancelForgotPassword = document.getElementById('cancel-forgot-password');
+  
+    forgotPasswordBtn.addEventListener('click', () => {
+      forgotPasswordAction.style.display = 'block';
+    });
+  
+    cancelForgotPassword.addEventListener('click', () => {
+      forgotPasswordAction.style.display = 'none';
+    });
+  </script>
 
   <%- include('partials/footer') %>
