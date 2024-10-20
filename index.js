@@ -72,7 +72,7 @@ app.get("/secrets", async (req, res) => {
       });
     }else{
       res.render("secrets.ejs",{
-        secret: "❤ Thao Linh Pham is my little angel ❤",
+        secret: "This is a default secret!",
       });
     }
   } else {
