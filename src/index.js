@@ -5,7 +5,6 @@ import GoogleStrategy from "passport-google-oauth2";
 import FacebookStrategy from "passport-facebook";
 
 import authRouter from './route/authenApi.js';
-import oauthRouter from './route/oauthApi.js'
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +14,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    cookie: {maxAge: 30000}
 }));
 
 //run session
@@ -25,7 +25,7 @@ passport.use(new GoogleStrategy(
   {
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: "/oauth/google/callback",
+    callbackURL: "/auth/google/callback",
   },accessToken => {
     console.log(accessToken);
   }
@@ -33,7 +33,6 @@ passport.use(new GoogleStrategy(
 
 //authen using platform's data
 app.use("/auth", authRouter);
-app.use("/oauth", oauthRouter);
 
 app.listen(PORT, () => {
     console.log(`Khoi tao server tai http://localhost:${PORT}`);

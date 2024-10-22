@@ -1,6 +1,6 @@
 import checkUserExist from '../model/checkUserExist.js'
 
-let Login = async (req, res) => {
+let Login = async (req, res, next) => {
 
     const {Username, Password} = req.body;
 
@@ -14,8 +14,9 @@ let Login = async (req, res) => {
         }
 
         // Respond with success message
-        res.status(201).json({ message: 'Successed'})
+        //res.status(201).json({ message: 'Successed'})
         console.log('>>>>>Login successful <3 <3');
+        next();
     }
     catch (error) {
         console.error('Error logging in:', error);
