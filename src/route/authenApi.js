@@ -13,10 +13,15 @@ let authRouter = express.Router();
 
 configRouter(authRouter);
 
-// register API
+//check API
+authRouter.get('/', (req, res) => {
+    res.json("Check!");
+}) 
+
+//register API
 authRouter.post('/register', Register)
 
-// login API
+//login API
 authRouter.post('/login', Login, (req, res) =>{
     req.session.user = {username: req.body.Username, password: req.body.Password};
     res.json({ message: 'Set session'});
@@ -30,7 +35,10 @@ authRouter.get("/google", passport.authenticate("google", {
     })
 );
 
-authRouter.get("/google/callback", passport.authenticate("google"));
+authRouter.get("/google/callback", passport.authenticate("google", {
+    successRedirect: "/secrets",
+    failureRedirect: "/login",
+}));
 
 //login by facebook, using OAuth
 authRouter.get("/facebook", passport.authenticate("facebook", {
@@ -40,7 +48,7 @@ authRouter.get("/facebook", passport.authenticate("facebook", {
 
 authRouter.get("/facebook/callback", passport.authenticate("facebook"));
 
-// delete API
+//delete API
 authRouter.post('/delete', deleteUser)
 
 export default authRouter;

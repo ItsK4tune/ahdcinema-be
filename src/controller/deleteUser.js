@@ -22,7 +22,7 @@ let DeleteUser = async (req, res) => {
     }
     catch (error) {
         console.error('Error deleting:', error);
-        res.status(500)
+        res.status(500);
     }
 }
 
