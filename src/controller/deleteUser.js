@@ -2,9 +2,7 @@ import checkUserExist from '../model/checkUserExist.js'
 import deleteUser from '../model/deleteUser.js';
 
 let DeleteUser = async (req, res) => {
-
     const {Username, Password} = req.body;
-    console.log(Username + ' ' + Password)
 
     try {
         // Retrieve user by username from the database

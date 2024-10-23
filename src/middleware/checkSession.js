@@ -1,5 +1,5 @@
 let checkSession = (req, res) => {
-    if (req.session.user) {
+    if (req.session.passport || req.session.user) {
         res.json({ active: 'true' }); // Session is active
     } 
     else {

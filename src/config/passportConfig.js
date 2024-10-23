@@ -16,12 +16,22 @@ let configPassport = (passport) =>{
             try {
                 const result = await checkUsername(profile.email);
                 
+                let user;
                 if (!result) {
-                    const newUser = await pool.execute('INSERT INTO user (Username, Password, GoogleOauth) VALUES (?, ?, ?)', [profile.email, "google", accessToken]);
-                    return cb(null, newUser.rows[0]);
+                    await pool.execute('INSERT INTO user (Username, Password) VALUES (?, ?)', [profile.email, "google"]);
+                    user = {
+                        Username: profile.email,
+                        Password: "google"
+                    }
+                    return cb(null, user);
                 } 
-                else
-                    return cb(null, result);
+                else{
+                    user = {
+                        Username: result.Username,
+                        Password: result.Password
+                    }
+                    return cb(null, user);
+                }
             } 
             catch (err) {
                 return cb(err);
