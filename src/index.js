@@ -5,6 +5,7 @@ import passport from "passport";
 import configPassport from './config/passportConfig.js';
 
 import authRouter from './route/authenApi.js';
+import cinemaRouter from './route/cinemaAPI.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,7 +26,10 @@ app.use(passport.session());
 configPassport(passport);
 
 //authen using platform's data
-app.use("/auth", authRouter);
+app.use('/auth', authRouter);
+
+//API
+app.use('/api', cinemaRouter);
 
 app.listen(PORT, () => {
     console.log(`Khoi tao server tai http://localhost:${PORT}`);

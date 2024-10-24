@@ -6,12 +6,13 @@ import pool from './connectDB.js'
 import checkUsername from '../model/checkUsername.js';
 
 let configPassport = (passport) =>{
+    //google strategy config
     passport.use(new GoogleStrategy(
-    {
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: "/auth/google/callback",
-    },
+        {
+            clientID: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            callbackURL: "/auth/google/callback",
+        },
         async (accessToken, refreshToken, profile, cb) => {
             try {
                 const result = await checkUsername(profile.email);
@@ -38,6 +39,7 @@ let configPassport = (passport) =>{
             }
     }));
     
+    //setup session
     passport.serializeUser((user, cb) => {
         cb(null, user);
     });

@@ -5,22 +5,24 @@ let Login = async (req, res, next) => {
     const {Username, Password} = req.body;
 
     try {
-        // Retrieve user by username from the database
+        //retrieve user by username from the database
         const user = await checkUserExist(Username, Password);
         
         if (!user) {
-            console.log('>>>>>Login failed!!!');
-            return res.status(300).json({ message: 'Failed'} )
+            //respond with fail message
+            console.log('Login failed');
+            return res.status(400).json({message: 'Failed'});
         }
 
-        // Respond with success message
-        //res.status(201).json({ message: 'Successed'})
-        console.log('>>>>>Login successful <3 <3');
+        //respond with success message
+        res.status(201).json({message: 'Successed'})
+        console.log('Login successful');
         next();
     }
     catch (error) {
+        //respond with error message
         console.error('Error logging in:', error);
-        res.status(500)
+        res.status(404).json({message: 'Error logging in'});
     }
 }
 

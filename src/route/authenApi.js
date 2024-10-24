@@ -7,25 +7,23 @@ import Login from '../controller/login.js'
 import Register from '../controller/register.js';
 import deleteUser from '../controller/deleteUser.js';
 
+import setSession from '../middleware/setSession.js';
 import checkSession from '../middleware/checkSession.js';
 
 let authRouter = express.Router();
 
 configRouter(authRouter);
 
-//check API
+//check
 authRouter.get('/', (req, res) => {
     res.json("Check!");
 }) 
 
-//register API
+//register 
 authRouter.post('/register', Register)
 
-//login API
-authRouter.post('/login', Login, (req, res) =>{
-    req.session.user = {username: req.body.Username, password: req.body.Password};
-    res.json({ message: 'Set session'});
-})
+//login 
+authRouter.post('/login', Login, setSession)
 
 authRouter.get('/check-session', checkSession)
 
@@ -35,6 +33,7 @@ authRouter.get("/google", passport.authenticate("google", {
     })
 );
 
+//callback 
 authRouter.get("/google/callback", passport.authenticate("google", {
     successRedirect: "/secrets",
     failureRedirect: "/login",
@@ -49,6 +48,6 @@ authRouter.get("/facebook", passport.authenticate("facebook", {
 authRouter.get("/facebook/callback", passport.authenticate("facebook"));
 
 //delete API
-authRouter.post('/delete', deleteUser)
+authRouter.post('/delete', checkSession, deleteUser)
 
 export default authRouter;

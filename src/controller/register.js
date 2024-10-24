@@ -6,28 +6,31 @@ let Register = async (req, res) => {
     const {Username, Password} = req.body;
 
     try {
-        // Retrieve user by username from the database
+        //retrieve user by username from the database
         const user = await checkUsername(Username);
         
         if (!user) {
             try {
+                //create new record in db
                 await createUser(Username, Password);
             }
             catch (err){
+                //respond with error message
                 console.error('Error creating user:', err);
+                return res.status(404).json({message: 'Error creating user:'});
             }
-            // Respond with success message
-            console.log("<<<<<Register successful <3 <3")
-            return res.status(201).json({ message: 'User registered successfully'});
+            //respond with success message
+            console.log("Register successful")
+            return res.status(201).json({ message: 'Successed'});
         }
 
-        // Respond with failed message
-        console.log('<<<<<Register failed!!');
+        //respond with failed message
+        console.log('Register failed');
         return res.status(300).json({ message: 'Username is already taken' });
     }
     catch (error) {
         console.error('Error querying:', error);
-        res.status(500)
+        res.status(404).json({message: 'Error querying'});
     }
 }
 
