@@ -7,4 +7,4 @@ let checkSession = (req, res) => {
     }
 }
 
-export default checkSession
+export default checkSession;

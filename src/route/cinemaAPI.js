@@ -2,15 +2,22 @@ import express from 'express'
 
 import configRouter from '../config/routerConfig.js';
 
+import GetCity from '../controller/getCity.js';
+import GetCinema from '../controller/getCinema.js';
+import GetShowTime from '../controller/getShowtime.js';
+
 let cinemaRouter = express.Router();
 
 configRouter(cinemaRouter);
 
-cinemaRouter.get('/cities')
+//get cities "/cities"
+cinemaRouter.get('/cities', GetCity)
 
-cinemaRouter.get('/cinemas')
+//get cinemas based on city_id "/cinemas?city_id={}"
+cinemaRouter.get('/cinemas', GetCinema)
 
-cinemaRouter.get('/showtimes')
+//get showtime based on cinema_id, show_date "/showtimes?cinema_id={}&show_date={}"
+cinemaRouter.get('/showtimes', GetShowTime)
 
 cinemaRouter.get('/now-showing')
 
