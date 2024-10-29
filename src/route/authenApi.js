@@ -10,6 +10,7 @@ import deleteUser from '../controller/deleteUser.js';
 import setSession from '../middleware/setSession.js';
 import checkSession from '../middleware/checkSession.js';
 import deleteSession from '../middleware/deleteSession.js';
+import forgotPassword from '../controller/forgotPassword.js';
 
 let authRouter = express.Router();
 
@@ -70,5 +71,7 @@ authRouter.post('/delete', checkSession, deleteUser)
 
 //logout API
 authRouter.get('/logout', checkSession, deleteSession)
+
+authRouter.post('/forgot-password', forgotPassword);
 
 export default authRouter;
