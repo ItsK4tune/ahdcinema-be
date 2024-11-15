@@ -4,7 +4,7 @@ import passport from "passport";
 
 import configPassport from './config/passportConfig.js';
 
-import authRouter from './route/authenApi.js';
+import authRouter from './route/authenAPI.js';
 import cinemaRouter from './route/cinemaAPI.js';
 
 const app = express();
@@ -15,7 +15,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: {maxAge: 30000}
+    cookie: {maxAge: 300000}
 }));
 
 //run session
