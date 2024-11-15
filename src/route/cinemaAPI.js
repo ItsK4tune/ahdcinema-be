@@ -35,6 +35,15 @@ cinemaRouter.route('/member-info')
     .get()
     .post()
 
+cinemaRouter.get('/card-types');
+
+cinemaRouter.get('/card-purchase');
+
+cinemaRouter.get('/movie-showdates');
+
+cinemaRouter.get('/movie-cities');
+
+cinemaRouter.get('/movie-showtimes');
 
 export default cinemaRouter;
 

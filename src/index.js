@@ -31,6 +31,6 @@ app.use('/auth', authRouter);
 //API
 app.use('/api', cinemaRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Khoi tao server tai http://localhost:${PORT}`);
 })  
