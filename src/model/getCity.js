@@ -2,7 +2,7 @@ import pool from '../config/connectDB.js';
 
 let getCity = async () => {
     try {
-        const [rows, field] = await pool.execute('SELECT * FROM city JOIN cinema ON city.cityid = cinema.cityid');
+        const [rows, field] = await pool.execute('SELECT distinct city_name FROM city JOIN cinema ON city.cityid = cinema.cityid');
 
         //check whether rows is null or not
         return rows.length ? rows : null;

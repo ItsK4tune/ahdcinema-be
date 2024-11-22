@@ -11,8 +11,8 @@ let GetMovieContent = async (req, res) => {
     }
     catch (error) {
         //respond with error message
-        console.error('Error getting movie content:', error);
-        res.status(404).json({message: 'Error getting movie content'});
+        console.error('Error getting movie details:', error);
+        res.status(404).json({message: 'Error getting movie details'});
     }
 }
 
