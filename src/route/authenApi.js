@@ -1,27 +1,21 @@
 import express from 'express'
 import passport from 'passport';
-
 import configRouter from '../config/routerConfig.js';
-
-import Login from '../controller/login.js'
-import Register from '../controller/register.js';
-import deleteUser from '../controller/deleteUser.js';
-
-import setSession from '../middleware/setSession.js';
+import { DeleteUser, ForgotPassword, Login, Register } from '../controller/authenRelated.controller.js';
+import setSession from '../middleware/setSession.js'
 import checkSession from '../middleware/checkSession.js';
 import deleteSession from '../middleware/deleteSession.js';
-import forgotPassword from '../controller/forgotPassword.js';
 
 let authRouter = express.Router();
 
 configRouter(authRouter);
 
 //check (for test)
-authRouter.get('/', (req, res) => {
-    res.json("Check!");
+authRouter.get('/health-check', (req, res) => {
+    res.status(200).json("Check!");
 }) 
 
-//test cookie API 
+//set cookie (for test) 
 authRouter.get('/set-cookie', (req, res) => {
     // Setting a cookie
     res.cookie('test', 'test-value', { 
@@ -30,17 +24,17 @@ authRouter.get('/set-cookie', (req, res) => {
         secure: true, // Ensures the cookie is sent over HTTPS
         sameSite: 'Strict' // Controls cookie sending in cross-site requests
     });
-    res.send('Cookie has been set!');
+    return res.json('Cookie has been set!');
 });
+
+//check-session (for test)
+authRouter.get('/check-session', checkSession)
 
 //register 
 authRouter.post('/register', Register)
 
 //login 
 authRouter.post('/login', Login, setSession)
-
-//check-session (for test)
-authRouter.get('/check-session', checkSession)
 
 //login by google, using OAuth
 authRouter.get("/google", passport.authenticate("google", {
@@ -50,7 +44,7 @@ authRouter.get("/google", passport.authenticate("google", {
 
 //callback 
 authRouter.get("/google/callback", passport.authenticate("google", {
-    successRedirect: "/auth",
+    successRedirect: "/auth", //sau này thay bằng trang chủ
     failureRedirect: "/login",
 }));
 
@@ -62,16 +56,17 @@ authRouter.get("/facebook", passport.authenticate("facebook", {
 
 //callback
 authRouter.get("/facebook/callback", passport.authenticate("facebook", {
-    successRedirect: "/auth",
+    successRedirect: "/auth", //sau này thay bằng trang chủ
     failureRedirect: "/login",
 }));
 
 //delete API
-authRouter.post('/delete', checkSession, deleteUser)
+authRouter.post('/delete', checkSession, DeleteUser)
 
 //logout API
 authRouter.get('/logout', checkSession, deleteSession)
 
-authRouter.post('/forgot-password', forgotPassword);
+//forgot password API
+authRouter.post('/forgot-password', ForgotPassword);
 
 export default authRouter;

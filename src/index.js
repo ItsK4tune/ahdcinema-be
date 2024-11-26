@@ -1,9 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import passport from "passport";
-
 import configPassport from './config/passportConfig.js';
-
 import authRouter from './route/authenAPI.js';
 import cinemaRouter from './route/cinemaAPI.js';
 
