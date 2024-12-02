@@ -1,10 +1,10 @@
 import express from 'express'
 import passport from 'passport';
 import configRouter from '../config/routerConfig.js';
-import { DeleteUser, ForgotPassword, Login, Register } from '../controller/authenRelated.controller.js';
 import setSession from '../middleware/setSession.js'
 import checkSession from '../middleware/checkSession.js';
 import deleteSession from '../middleware/deleteSession.js';
+import { DeleteUser, ForgotPassword, Login, Register } from '../controller/authentication.controller.js';
 
 let authRouter = express.Router();
 

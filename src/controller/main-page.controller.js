@@ -1,4 +1,4 @@
-import checkSession from "../middleware/checkSession"
+import checkSession from '../middleware/checkSession.js'
 
 export const GetAll = async (req, res) => {
     // try {

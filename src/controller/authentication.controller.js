@@ -1,140 +1,129 @@
-import { getCardInfo, getCardType, getUserMemberCard } from '../model/other.model.js';
-import { chooseSeat, getMovieCity, getShowDate, getShowTime } from '../model/ticket-web.model.js';
-import { getMemberInfo, postUserInfo } from '../model/user.model.js';
+import { createUser, deleteUser, getUserExist, getUsername } from '../model/authentication.model.js';
 
-export const GetMemberInfo = async (req, res) => {
-    const {user_id} = req.query;
 
-    if (!user_id) {
-        console.log('GetMemberInfo failed: Missing user_id parameter');
-        return res.status(400).json({ message: 'user_id parameter is required' });
+export const Login = async (req, res, next) => {
+    const {Username, Password} = req.body;
+
+    if (!Username || !Password) {
+        console.log('Login failed: Missing Username or Password');
+        return res.status(400).json({ message: 'Username and Password are required' });
     }
 
     try {
-        const result = await getMemberInfo(user_id);    
-        return res.status(200).json(result);
+        const user = await getUserExist(Username, Password);
+        
+        if (!user) {
+            console.log('Login failed: Invalid credentials');
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+
+        console.log('Login successful');
+        res.status(200).json({ message: 'Login successful' });
+
+        next();
     }
     catch (error) {
-        console.error('Error getting member information: ', error);
-        res.status(500).json({ message: 'Error getting member informaton' });
+        console.error('Error logging in:', error);
+        res.status(500).json({message: 'Internal server error'});
     }
 }
 
-export const PostMemeberInfor = async (req, res) => {
-    const {user_id} = req.query;
-    const updateData = req.body;
+export const Register = async (req, res) => {
+    const {Username, Password} = req.body;
 
-    if (!updateData || typeof updateData !== 'object' || Object.keys(updateData).length === 0) {
-        console.log('No fields provided to update.');
-        return res.status(400).json({ message: 'No infomation provided to update' });
+    if (!Username || !Password) {
+        console.log('Register failed: Missing Username or Password');
+        return res.status(400).json({ message: 'Username and Password are required' });
     }
 
     try {
-        await postUserInfo(user_id, updateData);
-        return res.status(200).json({ message: 'Profile updated' });
+        const user = await getUsername(Username);
+        
+        if (user) {
+            console.log('Register failed: Username is already taken');
+            return res.status(401).json({ message: `Username: ${Username} is already taken` });
+        }
+
+        await createUser(Username, Password);
+
+        console.log(`Register successful for Username: ${Username}`);
+        return res.status(200).json({ message: 'Registration successful' });
     }
     catch (error) {
-        console.log('Error updating member information: ', error);
-        res.status(500).json({ message: 'Error updating member informaton' });
+        console.error('Error during registration:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-export const GetCardType = async (res) => {
+export const DeleteUser = async (req, res) => {
+    const {Username, Password} = req.body;
+
+    if (!Username || !Password) {
+        console.log('Delete failed: Missing Username or Password');
+        return res.status(400).json({ message: 'Username and Password are required' });
+    }
+
     try {
-        const result = await getCardType();
-        return res.status(200).json(result);
-    }
+        const user = await getUserExist(Username, Password);
+
+        if (!user) {
+            console.log(`Delete failed: No user found for Username: ${Username}`);
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        await deleteUser(Username, Password);
+
+        console.log(`User: ${Username} deleted successfully`);
+        return res.status(200).json({ message: 'User deleted successfully' });
+    } 
     catch (error) {
-        console.log('Error getting card types: ', error);
-        res.status(500).json({ message: 'Error getting card types' });
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-export const GetUserMemberCard = async (req, res) => {
-    const { user_id }= req.query; 
+export const ForgotPassword = async (req, res) => {
+    const {Username, Email} = req.body;
+
+    if (!Username || !Password) {
+        console.log('Cannot get information: Missing Username or Email');
+        return res.status(400).json({ message: 'Username and Email are required' });
+    }
+
+    try {
+        const result = await getUsername(Username);
+
+        if (result.length==0) {
+            console.log(`Retrive password failed: No account found for Username: ${Username}`);
+            return res.status(401).json({ message: 'Retrive password failed: Account does not exist!' });
+        }
+  
+        let transporter = nodemailer.createTransport({
+            service: 'gmail', 
+            auth: {
+                user: process.env.MY_GOOGLE_ACCOUNT,    
+                pass: process.env.MY_GOOGLE_PASSWORD    
+            }
+        });
     
-    try {
-        const result = await getUserMemberCard(user_id);
-        return res.status(200).json(result);
+        let mailOptions = {
+            from: process.env.MY_GOOGLE_ACCOUNT,
+            to: Email,
+            subject: 'Password Reset Request',
+            text: `Your password is: ${result.Password}`
+        };
+    
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json('Error sending mail');
+            }
+            console.log(`Send password-recovery mail successfully to User: ${Username}`);
+            return res.status(200).json({ message: 'Send password-recovery mail successfully' });
+        });
     }
     catch (error) {
-        console.log(`Error getting user's card types: `, error);
-        res.status(500).json({ message: `Error getting user's card types` });
-    }
-}
-
-export const CardInfo = async (req, res) => {
-    const { card_type } = req.body;
-
-    try {
-        const result = await getCardInfo(card_type);
-
-    }
-    catch (error) {
-        console.log(`Error getting card info: `, error);
-        res.status(500).json({ message: `Error getting card info` });
-    }
-}
-
-export const GetShowDate = async (req, res) => {
-    const { movie_id } = req.query;
-
-    try {
-        const result = await getShowDate(movie_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting showdate: `, error);
-        res.status(500).json({ message: `Error getting showdate` });
-    }
-}
-
-export const GetMovieCity = async (req, res) => {
-    const { movie_id, show_date } = req.query;
-
-    try {
-        const result = await getMovieCity(movie_id, show_date);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting city: `, error);
-        res.status(500).json({ message: `Error getting city` });
-    }
-}
-
-export const GetShowTime = async (req, res) => {
-    const { movie_id, show_date, city_id } = req.query;
-
-    try {
-        const result = await getShowTime(movie_id, show_date, city_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting showtime: `, error);
-        res.status(500).json({ message: `Error getting showtime` });
-    }
-}
-
-export const ChooseSeat = async (req, res) => {
-    const { screeningroom_id } = req.query;
-
-    try {
-        const result = await chooseSeat(screeningroom_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error choosing seat: `, error);
-        res.status(500).json({ message: `Error choosing seat` });
-    }
-}
-
-export const GetVoucher = async (res) => {
-    try {
-        const result = await getVoucher();
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting voucher: `, error);
-        res.status(500).json({ message: `Error getting voucher` });
+        console.error(err);
+        res.status(500).send('Error!');
     }
 }

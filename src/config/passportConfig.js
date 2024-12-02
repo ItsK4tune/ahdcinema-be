@@ -1,7 +1,7 @@
 import GoogleStrategy from "passport-google-oauth2";
 import FacebookStrategy from "passport-facebook";
 import pool from './connectDB.js'
-import { getUsername } from "../model/user.model.js";
+import { getUsername } from "../model/authentication.model.js";
 
 let configPassport = (passport) =>{
     //google strategy config
