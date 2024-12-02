@@ -1,18 +1,15 @@
-import mysql from 'mysql2'
-import 'dotenv/config';
+import pg from "pg";
+import env from "dotenv";
 
-const host = process.env.HOST;
-const user = process.env.USER;
-const password = process.env.PASSWORD;
-const database = process.env.DATABASE;
-
-// Create database connection
-const pool = mysql.createPool({
-    host: host,
-    user: user,
-    password: password,
-    database: database
-});
+env.config();
+//run database
+const db = new pg.Client({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT,
+  });
 
 // Export a function to query the database
-export default pool.promise();
+export default db.promise();

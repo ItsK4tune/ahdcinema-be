@@ -1,6 +1,6 @@
 import GoogleStrategy from "passport-google-oauth2";
 import FacebookStrategy from "passport-facebook";
-import pool from './connectDB.js'
+import db from './connectDB.js'
 import { getUsername } from "../model/user.model.js";
 
 let configPassport = (passport) =>{
@@ -17,7 +17,7 @@ let configPassport = (passport) =>{
                 
                 let user;
                 if (!result) {
-                    await pool.execute('INSERT INTO user (Username, Password) VALUES (?, ?)', [profile.email, "google"]);
+                    await db.query('INSERT INTO user (Username, Password) VALUES (?, ?)', [profile.email, "google"]);
                     user = {
                         Username: profile.email,
                         Password: "google"

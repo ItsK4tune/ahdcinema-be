@@ -1,8 +1,8 @@
-import pool from '../config/connectDB.js';
+import db from '../config/connectDB.js';
 
 export const getUserExist = async (username, password) => {
     try {
-        const [rows, field] = await pool.execute('SELECT * FROM user WHERE Username = ? and Password = ?', [username, password]);
+        const [rows, field] = await db.query('SELECT * FROM user WHERE Username = $1 and Password = $2', [username, password]);
 
         //check whether rows is null or not
         return rows.length ? rows[0] : null;
@@ -14,7 +14,7 @@ export const getUserExist = async (username, password) => {
 
 export const getUsername = async (username) => {
     try {
-        const [rows, field] = await pool.execute('SELECT * FROM user WHERE Username = ?', [username]);
+        const [rows, field] = await db.query('SELECT * FROM user WHERE Username = $1', [username]);
 
         //check whether rows is null or not
         return rows.length ? rows[0] : null;
@@ -26,7 +26,7 @@ export const getUsername = async (username) => {
 
 export const createUser = async (username, password) => {
     try {
-        await pool.execute('INSERT INTO user (Username, Password) VALUES (?, ?)', [username, password]);
+        await db.query('INSERT INTO user (Username, Password) VALUES ($1, $2)', [username, password]);
     } 
     catch (error) {
         console.error('Error creating user:', error);
@@ -35,7 +35,7 @@ export const createUser = async (username, password) => {
 
 export const deleteUser = async (username, password) => {
     try {
-        await pool.execute('DELETE FROM user WHERE Username = ? AND Password = ?', [username, password]);
+        await db.query('DELETE FROM user WHERE Username = $1 AND Password = $2', [username, password]);
     } 
     catch (error) {
         console.error('Error delete user:', error);
@@ -44,8 +44,8 @@ export const deleteUser = async (username, password) => {
 
 export const getMemberInfo = async (user_id) => {
     try {
-        const [rows, field] = await pool.execute(`select email, UserInfo.* from UserInfo join Users on
-                                                 UserInfo.user_id=Users.user_id where Users.user_id=?`,[user_id]);
+        const [rows, field] = await db.query(`select email, UserInfo.* from UserInfo join Users on
+                                                 UserInfo.user_id=Users.user_id where Users.user_id=$1`,[user_id]);
 
         //check whether rows is null or not
         return rows.length ? rows : null;
