@@ -8,6 +8,15 @@ import {
     GetShowTime, 
     GetUpcomingMovie } from '../controller/noAuthenMethod.controller.js';
 import checkSession from '../middleware/checkSession.js'
+import { 
+    ChooseSeat,
+    GetCardType,
+    GetMemberInfo, 
+    GetMovieCity, 
+    GetShowDate, 
+    GetUserMemberCard, 
+    GetVoucher, 
+    PostMemeberInfor } from '../controller/authentication.controller.js';
 
 let cinemaRouter = express.Router();
 
@@ -15,40 +24,45 @@ configRouter(cinemaRouter);
 
 //no need authentication
 
-cinemaRouter.get('/');
+//Main webpage
+cinemaRouter.get('/', );
 
-//get cities "/cities"
+//Theater webpage
 cinemaRouter.get('/cities', GetCity);
-
-//get cinemas based on city_id "/cinemas?city_id={}"
 cinemaRouter.get('/cinemas', GetCinema);
-
-//get showtime based on cinema_id, show_date "/showtimes?cinema_id={}&show_date={}"
 cinemaRouter.get('/showtimes', GetShowTime);
 
+//Movielist webpage
 cinemaRouter.get('/now-showing', GetCurrentMovie);
-
 cinemaRouter.get('/coming-soon', GetUpcomingMovie);
 
+//Movie detail webpage
 cinemaRouter.get('/movie-content', GetMovieContent);
 
+//Event webpage
 cinemaRouter.get('/event');
 
 //need authentication
 
-cinemaRouter.route('/member-info')
-    .get(checkSession, )
-    .post(checkSession, )
+//Member info webpage
+cinemaRouter.get('/member-info', checkSession, GetMemberInfo);
+cinemaRouter.post('/member-info',checkSession, PostMemeberInfor);
 
-cinemaRouter.get('/card-types', checkSession);
+//Membership webpage
+cinemaRouter.get('/card-types', checkSession, GetCardType);
+cinemaRouter.get('/user-membercard', checkSession, GetUserMemberCard)
 
-cinemaRouter.get('/card-purchase', checkSession);
+//Membership purchase webpage
+cinemaRouter.post('/card-purchase', checkSession);
 
-cinemaRouter.get('/movie-showdates', checkSession);
+//Movie ticket purchase webpage
+cinemaRouter.get('/buyticket/movie-showdates', checkSession, GetShowDate);
+cinemaRouter.get('/buyticket/movie-cities', checkSession, GetMovieCity);
+cinemaRouter.get('/buyticket/movie-showtimes', checkSession, GetShowTime);
 
-cinemaRouter.get('/movie-cities', checkSession);
+cinemaRouter.get('/buyticket/choose-seats', checkSession, ChooseSeat);
 
-cinemaRouter.get('/movie-showtimes', checkSession);
+cinemaRouter.get('/buyticket/vouchers', checkSession, GetVoucher)
 
 export default cinemaRouter;
 

@@ -1,12 +1,22 @@
 import pool from '../config/connectDB.js';
 
+export const getALl = async () => {
+    try {
+        const [rows, field] = await pool.execute('SELECT * FROM cinema WHERE cityid = ?', [city_id]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error('Error getting cinema: ', error);
+    }
+}
+
 export const getCinema = async (city_id) => {
     try {
         const [rows, field] = await pool.execute('SELECT * FROM cinema WHERE cityid = ?', [city_id]);
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting cinema:', error);
+        console.error('Error getting cinema: ', error);
     }
 }
 
@@ -16,7 +26,7 @@ export const getCity = async () => {
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting city:', error);
+        console.error('Error getting city: ', error);
     }
 }
 
@@ -29,7 +39,7 @@ export const getCurrentMovie = async () => {
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting now-showing movies:', error);
+        console.error('Error getting now-showing movies: ', error);
     }
 }
 
@@ -40,7 +50,7 @@ export const getMovieContent = async (movie_id) => {
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting movie details:', error);
+        console.error('Error getting movie details: ', error);
     }
 }
 
@@ -56,7 +66,7 @@ export const getShowTime = async (cinema_id, show_date) => {
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting showtimes:', error);
+        console.error('Error getting showtimes: ', error);
     }
 }
 
@@ -69,6 +79,36 @@ export const getUpcomingMovie = async () => {
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error('Error getting upcoming movies:', error);
+        console.error('Error getting upcoming movies: ', error);
+    }
+}
+
+export const getCardType = async () => {
+    try {
+        const [rows, field] = await pool.execute('select * from MemberCards');
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error('Error getting card types: ', error);
+    }
+}
+
+export const getUserMemberCard = async (user_id) => {
+    try {
+        const [rows, field] = await pool.execute(`select * from MemberCards join Memberships on Membercards.card_id=UserMemberships.card_id where user_id = ? and status= ‘Active’`, [user_id]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error(`Error getting user's card types: `, error);
+    }
+}
+
+export const getCardInfo = async (card_type) => {
+    try {
+        const [rows, field] = await pool.execute(`select card_id, price, duration from Membercards where card_type = ?`, [card_type]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error(`Error getting card info: `, error);
     }
 }

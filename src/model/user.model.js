@@ -55,4 +55,31 @@ export const getMemberInfo = async (user_id) => {
     }
 }
 
+export const postUserInfo = async (user_id, updateData) => {
+    try {
+        const fields = [];
+        const values = [];
+
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = ?`);
+            values.push(value);
+        }
+
+        values.push(user_id);
+
+        const query = `UPDATE UserInfo SET ${fields.join(', ')} WHERE user_id = ?`;
+
+        const [result] = await pool.execute(query, values);
+
+        if (result.affectedRows > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error('Error updating user information:', error);
+        return false;
+    }
+};
+
 
