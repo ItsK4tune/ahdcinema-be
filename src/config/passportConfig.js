@@ -1,9 +1,7 @@
 import GoogleStrategy from "passport-google-oauth2";
 import FacebookStrategy from "passport-facebook";
-
 import pool from './connectDB.js'
-
-import checkUsername from '../model/checkUsername.js';
+import { getUsername } from "../model/user.model.js";
 
 let configPassport = (passport) =>{
     //google strategy config
@@ -15,7 +13,7 @@ let configPassport = (passport) =>{
         },
         async (accessToken, refreshToken, profile, cb) => {
             try {
-                const result = await checkUsername(profile.email);
+                const result = await getUsername(profile.email);
                 
                 let user;
                 if (!result) {
