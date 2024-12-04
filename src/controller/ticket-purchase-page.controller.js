@@ -1,10 +1,10 @@
-import { chooseSeat, getMovieCity, getShowDate, getShowTime, getVoucher } from '../model/ticket-purchase-page-model.js';
+import { chooseSeat, getMovieCity, getShowDate, getShowTime, getUserMemberCard, getVoucher } from '../model/ticket-purchase-page-model.js';
 
 export const GetShowDate_ticket = async (req, res) => {
     const { movie_id } = req.query;
 
     if (!movie_id) {
-        console.log('GetShowDate failed: Missing movie_id parameter');
+        console.log('GetShowDate_ticket failed: Missing movie_id parameter');
         return res.status(400).json({ message: 'movie_id parameter is required' });
     }
 
@@ -22,7 +22,7 @@ export const GetMovieCity_ticket = async (req, res) => {
     const { movie_id, show_date } = req.query;
 
     if (!movie_id || !show_date) {
-        console.log('GetMovieCity failed: Missing user_id or show_date parameter');
+        console.log('GetMovieCity_ticket failed: Missing user_id or show_date parameter');
         return res.status(400).json({ message: 'user_id and show_date parameter is required' });
     }
 
@@ -40,7 +40,7 @@ export const GetShowTime_ticket = async (req, res) => {
     const { movie_id, show_date, city_id } = req.query;
 
     if (!movie_id || !show_date || !city_id) {
-        console.log('GetShowTime failed: Missing user_id or show_date or city_id parameter');
+        console.log('GetShowTime_ticket failed: Missing user_id or show_date or city_id parameter');
         return res.status(400).json({ message: 'user_id, show_date and city_id parameter is required' });
     }
 
@@ -72,9 +72,15 @@ export const ChooseSeat = async (req, res) => {
     }
 }
 
-export const GetVoucher = async (res) => {
+export const GetVoucher = async (req, res) => {
+    const { voucher_code } = req.query;
+
+    if (!voucher_code) {
+        console.log('GetVoucher failed: Missing voucher_code parameter');
+        return res.status(400).json({ message: 'voucher_code parameter is required' });
+    }
     try {
-        const result = await getVoucher();
+        const result = await getVoucher(voucher_code);
         return res.status(200).json(result);
     }
     catch (error) {
@@ -82,3 +88,21 @@ export const GetVoucher = async (res) => {
         res.status(500).json({ message: `Error getting voucher` });
     }
 }
+
+export const GetUserMemberCard_ticket = async (req, res) => {
+    const { user_id } = req.query;
+
+    if (!user_id) {
+        console.log('GetUserMemberCard_ticket failed: Missing user_id parameter');
+        return res.status(400).json({ message: 'user_id parameter is required' });
+    }
+    try {
+        const result = await getUserMemberCard(user_id);
+        return res.status(200).json(result);
+    }
+    catch (error) {
+        console.log(`Error getting membercard: `, error);
+        res.status(500).json({ message: `Error getting membercard` });
+    }
+}
+

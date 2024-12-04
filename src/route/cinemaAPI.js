@@ -6,7 +6,8 @@ import { GetCurrentMovie, GetUpcomingMovie } from '../controller/movielist-page.
 import { GetMovieContent } from '../controller/movie-detail.controller.js';
 import { GetMemberInfo, PostMemeberInfor } from '../controller/member-info-page.controller.js';
 import { GetCardType, GetUserMemberCard } from '../controller/membership-page.controller.js';
-import { ChooseSeat, GetMovieCity_ticket, GetShowDate_ticket, GetShowTime_ticket, GetVoucher } from '../controller/ticket-purchase-page.controller.js';
+import { ChooseSeat, GetMovieCity_ticket, GetShowDate_ticket, GetShowTime_ticket, GetUserMemberCard_ticket, GetVoucher } from '../controller/ticket-purchase-page.controller.js';
+import { CardPuchase } from '../controller/membership-purchase.controller.js';
 
 let cinemaRouter = express.Router();
 
@@ -43,7 +44,7 @@ cinemaRouter.get('/card-types', checkSession, GetCardType);
 cinemaRouter.get('/user-membercard', checkSession, GetUserMemberCard)
 
 //Membership purchase webpage
-cinemaRouter.post('/card-purchase', checkSession);
+cinemaRouter.post('/card-purchase', checkSession, CardPuchase);
 
 //Movie ticket purchase webpage
 cinemaRouter.get('/buyticket/movie-showdates', checkSession, GetShowDate_ticket);
@@ -52,7 +53,10 @@ cinemaRouter.get('/buyticket/movie-showtimes', checkSession, GetShowTime_ticket)
 
 cinemaRouter.get('/buyticket/choose-seats', checkSession, ChooseSeat);
 
-cinemaRouter.get('/buyticket/vouchers', checkSession, GetVoucher)
+cinemaRouter.get('/buyticket/vouchers', checkSession, GetVoucher);
+cinemaRouter.get('/buyticket/get-membercard', checkSession, GetUserMemberCard_ticket);
+cinemaRouter.post('/buyticket/payment', checkSession, );
+
 
 export default cinemaRouter;
 

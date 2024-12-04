@@ -16,12 +16,3 @@ export const getALl = async () => {
 
 
 
-export const getCardInfo = async (card_type) => {
-    try {
-        const [rows, field] = await pool.execute(`select card_id, price, duration from Membercards where card_type = ?`, [card_type]);
-        return rows.length ? rows : null;
-    } 
-    catch (error) {
-        console.error(`Error getting card info: `, error);
-    }
-}

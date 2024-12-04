@@ -51,12 +51,22 @@ export const chooseSeat = async (screeningroom_id) => {
     }
 }
 
-export const getVoucher = async () => {
+export const getVoucher = async (voucher_code) => {
     try {
-        const [rows, field] = await pool.execute(`select * from Vouchers`);
+        const [rows, field] = await pool.execute(`select * from Vouchers where voucher_code = ?`, [voucher_code]);
         return rows.length ? rows : null;
     } 
     catch (error) {
-        console.error(`Error get voucher: `, error);
+        console.error(`Error getting voucher: `, error);
+    }
+}
+
+export const getUserMemberCard = async (user_id) => {
+    try {
+        const [rows, field] = await pool.execute(`select * from Membercards m join UserMemberships um on m.card_id = um.card_id where user_id = ?`, [user_id]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error(`Error getting membercard: `, error);
     }
 }
