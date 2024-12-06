@@ -70,3 +70,13 @@ export const getUserMemberCard = async (user_id) => {
         console.error(`Error getting membercard: `, error);
     }
 }
+
+export const payTicket = async (total_price, user_id, seat_id, showtime_id, voucher_id) => {
+    try {
+        const [rows, field] = await pool.execute(`insert into Tickets(total_price, user_id, seat_id, showtime_id, voucher_id) values (?, ?, ?, ?, ?) returning ticket_id`, [total_price, user_id, seat_id, showtime_id, voucher_id]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error(`Error getting ticket_id: `, error);
+    }
+}

@@ -19,3 +19,13 @@ export const getUserMemberCard = async (user_id) => {
         console.error(`Error getting user's card types: `, error);
     }
 }
+
+export const buyCard = async (user_id, card_id) => {
+    try {
+        const [rows, field] = await pool.execute(`insert into CardPurchases(user_id, card_id) values (?, ?) returning purchase_id`, [user_id, card_id]);
+        return rows.length ? rows : null;
+    } 
+    catch (error) {
+        console.error(`Error getting purchase_id: `, error);
+    }
+}

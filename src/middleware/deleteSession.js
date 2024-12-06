@@ -1,4 +1,4 @@
-let deleteSession = (req, res) => {
+export const deleteSession = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error("Error destroying session:", err);
@@ -7,4 +7,3 @@ let deleteSession = (req, res) => {
     });
 }
 
-export default deleteSession;

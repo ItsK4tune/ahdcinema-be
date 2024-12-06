@@ -1,10 +1,11 @@
 import express from 'express'
 import passport from 'passport';
 import configRouter from '../config/routerConfig.js';
-import setSession from '../middleware/setSession.js'
-import checkSession from '../middleware/checkSession.js';
-import deleteSession from '../middleware/deleteSession.js';
+import { setSession } from '../middleware/setSession.js'
+import { checkSession }from '../middleware/checkSession.js';
+import { deleteSession } from '../middleware/deleteSession.js';
 import { DeleteUser, ForgotPassword, Login, Register } from '../controller/authentication.controller.js';
+import { setCookie } from '../middleware/setCookie.js';
 
 let authRouter = express.Router();
 
@@ -34,7 +35,7 @@ authRouter.get('/check-session', checkSession)
 authRouter.post('/register', Register)
 
 //login 
-authRouter.post('/login', Login, setSession)
+authRouter.post('/login', Login, setSession, setCookie)
 
 //login by google, using OAuth
 authRouter.get("/google", passport.authenticate("google", {

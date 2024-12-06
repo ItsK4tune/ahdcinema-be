@@ -1,4 +1,4 @@
-import { getBalance, getCardID, getCardInfo, updateBalance, updateFailedPurchase, updateSuccessPurchase, updateUserMemberShip } from "../model/membership-purchase.model";
+import { getBalance, getCardID, getCardInfo, updateBalance, updateFailedPurchase, updateSuccessPurchase, updateUserMemberShip } from '../model/membership-purchase.model.js';
 
 export const CardPuchase = async (req, res) => {
     const { card_type, user_id } = req.query;

@@ -1,4 +1,4 @@
-import { getCardType, getUserMemberCard } from '../model/membership-page.model.js';
+import { buyCard, getCardType, getUserMemberCard } from '../model/membership-page.model.js';
 
 export const GetCardType = async (res) => {
     try {
@@ -12,7 +12,7 @@ export const GetCardType = async (res) => {
 }
 
 export const GetUserMemberCard = async (req, res) => {
-    const { user_id }= req.query; 
+    const { user_id } = req.query; 
 
     if (!user_id) {
         console.log('GetUserMemberCard failed: Missing user_id parameter');
@@ -26,5 +26,23 @@ export const GetUserMemberCard = async (req, res) => {
     catch (error) {
         console.log(`Error getting user's card types: `, error);
         res.status(500).json({ message: `Error getting user's card types` });
+    }
+}
+
+export const BuyCard = async (req, res) => {
+    const { user_id, card_id } = req.query;
+
+    if (!user_id || !card_id) {
+        console.log('BuyCard failed: Missing user_id or card_id parameter');
+        return res.status(400).json({ message: 'user_id and card_id parameter are required' });
+    }
+
+    try {
+        const result = await buyCard(user_id, card_id);
+        return res.status(200).json(result);
+    }
+    catch (error) {
+        console.log(`Error returning purchase_id: `, error);
+        res.status(500).json({ message: `Error returning purchase_id ` });
     }
 }
