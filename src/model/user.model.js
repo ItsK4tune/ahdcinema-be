@@ -61,15 +61,15 @@ export const postUserInfo = async (user_id, updateData) => {
         const values = [];
 
         for (const [key, value] of Object.entries(updateData)) {
-            fields.push(`${key} = ?`);
+            fields.push(`${key} = $1`);
             values.push(value);
         }
 
         values.push(user_id);
 
-        const query = `UPDATE UserInfo SET ${fields.join(', ')} WHERE user_id = ?`;
+        const query = `UPDATE UserInfo SET ${fields.join(', ')} WHERE user_id = $1`;
 
-        const [result] = await pool.execute(query, values);
+        const [result] = await db.query(query, values);
 
         if (result.affectedRows > 0) {
             return true;

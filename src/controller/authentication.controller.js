@@ -1,140 +1,195 @@
-import { getCardInfo, getCardType, getUserMemberCard } from '../model/other.model.js';
-import { chooseSeat, getMovieCity, getShowDate, getShowTime } from '../model/ticket-web.model.js';
-import { getMemberInfo, postUserInfo } from '../model/user.model.js';
+import { createUser, deleteUser, getUserExist, checkEmail, setNewPassword } from '../model/authentication.model.js';
+import validator from 'validator';
+import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
 
-export const GetMemberInfo = async (req, res) => {
-    const {user_id} = req.query;
+export const Login = async (req, res) => {
+    const { Username, Password } = req.body;
 
-    if (!user_id) {
-        console.log('GetMemberInfo failed: Missing user_id parameter');
-        return res.status(400).json({ message: 'user_id parameter is required' });
+    // Kiểm tra đầu vào
+    if (!Username || !Password) {
+        console.log('Login failed: Missing username or password');
+        return res.status(400).json({ message: 'Username and password are required' });
     }
 
     try {
-        const result = await getMemberInfo(user_id);    
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.error('Error getting member information: ', error);
-        res.status(500).json({ message: 'Error getting member informaton' });
-    }
-}
+        // Lấy thông tin người dùng từ cơ sở dữ liệu
+        const user = await getUserExist(Username);
+        if (!user) {
+            console.log('Login failed: User not found');
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
 
-export const PostMemeberInfor = async (req, res) => {
-    const {user_id} = req.query;
-    const updateData = req.body;
+        // So khớp mật khẩu đã mã hóa
+        const isPasswordMatch = await bcrypt.compare(Password, user.user_password);
+        if (!isPasswordMatch) {
+            console.log('Login failed: Incorrect password');
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
 
-    if (!updateData || typeof updateData !== 'object' || Object.keys(updateData).length === 0) {
-        console.log('No fields provided to update.');
-        return res.status(400).json({ message: 'No infomation provided to update' });
+        console.log('Login successful');
+        return res.status(200).json({ message: 'Login successful', user: { username: user.user_account, email: user.email } });
+    } catch (error) {
+        console.error('Error during login:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+export const Register = async (req, res) => {
+    const { Username, Password, Email, Fullname, Phonenumber } = req.body;
+
+    // Kiểm tra các trường bắt buộc
+    if (!Username || !Password || !Email) {
+        console.log('Register failed: Missing some fields');
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Kiểm tra định dạng email
+    if (!validator.isEmail(Email)) {
+        console.log('Register failed: Invalid email format');
+        return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Kiểm tra độ dài mật khẩu
+    if (Password.length < 6) {
+        console.log('Register failed: Password too short');
+        return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
 
     try {
-        await postUserInfo(user_id, updateData);
-        return res.status(200).json({ message: 'Profile updated' });
-    }
-    catch (error) {
-        console.log('Error updating member information: ', error);
-        res.status(500).json({ message: 'Error updating member informaton' });
-    }
-}
+        // Kiểm tra username đã tồn tại
+        const user = await getUserExist(Username);
+        if (user) {
+            console.log('Register failed: Username is already taken');
+            return res.status(409).json({ message: `Username: ${Username} is already taken` }); // 409 Conflict
+        }
 
-export const GetCardType = async (res) => {
+        // Mã hóa mật khẩu
+        const hashedPassword = await bcrypt.hash(Password, 10);
+
+        // Tạo tài khoản người dùng
+        await createUser(Username, hashedPassword, Email, Fullname, Phonenumber);
+
+        console.log(`Register successful for Username: ${Username}`);
+        return res.status(201).json({ message: 'Registration successful' }); // 201 Created
+    } catch (error) {
+        console.error('Error during registration:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+export const DeleteUser = async (req, res) => {
+    const {Username, Password} = req.body;
+
+    if (!Username || !Password) {
+        console.log('Delete failed: Missing Username or Password');
+        return res.status(400).json({ message: 'Username and Password are required' });
+    }
+
     try {
-        const result = await getCardType();
-        return res.status(200).json(result);
-    }
+        const user = await getUserExist(Username, Password);
+
+        if (!user) {
+            console.log(`Delete failed: No user found for Username: ${Username}`);
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        await deleteUser(Username, Password);
+
+        console.log(`User: ${Username} deleted successfully`);
+        return res.status(200).json({ message: 'User deleted successfully' });
+    } 
     catch (error) {
-        console.log('Error getting card types: ', error);
-        res.status(500).json({ message: 'Error getting card types' });
+        console.error('Error deleting user:', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-export const GetUserMemberCard = async (req, res) => {
-    const { user_id }= req.query; 
+export const ForgotPassword = async (req, res) => {
+    const {Email} = req.body;
+
+    if (!Email) {
+        console.log('Cannot process: Missing Email');
+        return res.status(400).json({ message: 'Email is required' });
+    }
+    try {
+        const user = await checkEmail(Email, 'local');
+        if (!user) {
+            return res.status(404).json({ message: 'Email does not exist!' });
+          }
+        const newPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Cập nhật mật khẩu mới
+        await setNewPassword(hashedPassword, Email);
+        // send email with nodemailer
+        const transporter = nodemailer.createTransport({
+          service: 'gmail', 
+          auth: {
+            user: process.env.MY_GOOGLE_ACCOUNT,    
+            pass: process.env.MY_GOOGLE_PASSWORD    
+          }
+        });
     
-    try {
-        const result = await getUserMemberCard(user_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting user's card types: `, error);
-        res.status(500).json({ message: `Error getting user's card types` });
-    }
-}
-
-export const CardInfo = async (req, res) => {
-    const { card_type } = req.body;
-
-    try {
-        const result = await getCardInfo(card_type);
-
-    }
-    catch (error) {
-        console.log(`Error getting card info: `, error);
-        res.status(500).json({ message: `Error getting card info` });
+        const mailOptions = {
+          from: process.env.MY_GOOGLE_ACCOUNT,
+          to: Email,
+          subject: 'Password Reset Request',
+          text: `Your new password is: ${newPassword}. Please login with this password and change it if you want!`
+        };
+        await transporter.sendMail(mailOptions);
+        console.log("New password sent!");
+        return res.status(200).json({ message: 'Password reset successfully. Check your email!' });
+    } catch (error) {
+        console.error("Error during password reset:", error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-export const GetShowDate = async (req, res) => {
-    const { movie_id } = req.query;
+export const changePassword = async (req, res) => {
+    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+
+    // 1. Kiểm tra yêu cầu có đầy đủ thông tin không
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+        return res.status(400).json({ error: "All fields are required." });
+    }
+
+    // 2. Kiểm tra mật khẩu mới có khớp với xác nhận mật khẩu không
+    if (newPassword !== confirmNewPassword) {
+        return res.status(400).json({ error: "New password and confirm password do not match." });
+    }
 
     try {
-        const result = await getShowDate(movie_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting showdate: `, error);
-        res.status(500).json({ message: `Error getting showdate` });
-    }
-}
+        // 3. Lấy thông tin user hiện tại từ session 
+        const userId = req.user?.id || req.session?.user_id;
+        const currentLogBy= await getCurrentLogBy(userId)
+        // 4. Truy vấn mật khẩu hiện tại từ cơ sở dữ liệu
+        // const result = await db.query("SELECT password FROM users WHERE id = $1", [userId]);
+        // if (result.rows.length === 0) {
+        //     return res.status(404).json({ error: "User not found." });
+        // }
 
-export const GetMovieCity = async (req, res) => {
-    const { movie_id, show_date } = req.query;
+        // const currentHashedPassword = result.rows[0].password;
+        const currentHashedPassword = await getOldPassword(userId);
+        // 5. Kiểm tra mật khẩu cũ có đúng không
+        const isMatch = await bcrypt.compare(oldPassword, currentHashedPassword);
+        if (!isMatch) {
+            return res.status(400).json({ error: "Old password is incorrect." });
+        }
 
-    try {
-        const result = await getMovieCity(movie_id, show_date);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting city: `, error);
-        res.status(500).json({ message: `Error getting city` });
-    }
-}
+        // 6. Mã hóa mật khẩu mới
+        const saltRounds = 10;
+        const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
-export const GetShowTime = async (req, res) => {
-    const { movie_id, show_date, city_id } = req.query;
-
-    try {
-        const result = await getShowTime(movie_id, show_date, city_id);
-        return res.status(200).json(result);
+        // 7. Cập nhật mật khẩu mới vào cơ sở dữ liệu
+        await db.query("UPDATE users SET password = $1 WHERE id = $2", [hashedNewPassword, userId]);
+        await setNewPassword(hashedNewPassword, )
+        // 8. Phản hồi thành công
+        return res.status(200).json({ message: "Password updated successfully." });
+    } catch (err) {
+        console.error("Error changing password:", err);
+        return res.status(500).json({ error: "Internal server error." });
     }
-    catch (error) {
-        console.log(`Error getting showtime: `, error);
-        res.status(500).json({ message: `Error getting showtime` });
-    }
-}
-
-export const ChooseSeat = async (req, res) => {
-    const { screeningroom_id } = req.query;
-
-    try {
-        const result = await chooseSeat(screeningroom_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error choosing seat: `, error);
-        res.status(500).json({ message: `Error choosing seat` });
-    }
-}
-
-export const GetVoucher = async (res) => {
-    try {
-        const result = await getVoucher();
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting voucher: `, error);
-        res.status(500).json({ message: `Error getting voucher` });
-    }
-}
+};

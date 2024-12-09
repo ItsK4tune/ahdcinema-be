@@ -3,7 +3,7 @@ import env from "dotenv";
 
 env.config();
 //run database
-const db = new pg.Client({
+const db = new pg.Pool({
     user: process.env.PG_USER,
     host: process.env.PG_HOST,
     database: process.env.PG_DATABASE,
@@ -12,4 +12,4 @@ const db = new pg.Client({
   });
 
 // Export a function to query the database
-export default db.promise();
+export default db;

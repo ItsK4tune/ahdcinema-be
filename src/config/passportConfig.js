@@ -1,50 +1,68 @@
 import GoogleStrategy from "passport-google-oauth2";
 import FacebookStrategy from "passport-facebook";
-import db from './connectDB.js'
-import { getUsername } from "../model/user.model.js";
+import { checkEmail, createOAuthAccount } from "../model/user.model.js";
+import env from "dotenv";
 
-let configPassport = (passport) =>{
+env.config();
+export const configGooglePassport = (passport) =>{
     //google strategy config
     passport.use(new GoogleStrategy(
         {
             clientID: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
-            callbackURL: "/auth/google/callback",
+            callbackURL: "http://localhost:3000/auth/google/cinema",
+            userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         },
         async (accessToken, refreshToken, profile, cb) => {
             try {
-                const result = await getUsername(profile.email);
-                
-                let user;
+                const result = await checkEmail(profile.email, 'google');
                 if (!result) {
-                    await db.query('INSERT INTO user (Username, Password) VALUES (?, ?)', [profile.email, "google"]);
-                    user = {
-                        Username: profile.email,
-                        Password: "google"
-                    }
-                    return cb(null, user);
+                    const newUser = await createOAuthAccount(profile.name.givenName, profile.email, 'google'); 
+                    return cb(null, newUser);
                 } 
                 else{
-                    user = {
-                        Username: result.Username,
-                        Password: result.Password
-                    }
-                    return cb(null, user);
+                    return cb(null, result);
                 }
             } 
             catch (err) {
+                console.error("Error in Google strategy:", err);
                 return cb(err);
             }
-    }));
-    
-    //setup session
+    }));  
+}
+//run facebook-passport
+export const configFacebookPassport = (passport) => {
+    passport.use(
+        new FacebookStrategy(
+            {
+                clientID: process.env.FACEBOOK_APP_ID,
+                clientSecret: process.env.FACEBOOK_APP_SECRET,
+                callbackURL: "http://localhost:3000/auth/facebook/cinema",
+                profileFields: ['id', 'displayName', 'photos', 'email'], // Đảm bảo yêu cầu email
+            },
+            async (accessToken, refreshToken, profile, cb) => {
+                try {
+                    const result = await checkFacebookEmail(profile.email, 'facebook'); // Kiểm tra xem email đã tồn tại chưa
+                    if (!result) {
+                        const newUser = await createOAuthAccount(profile.displayName, profile.email, 'facebook'); 
+                        return cb(null, newUser);
+                    } else {
+                        return cb(null, result);
+                    }
+                } catch (err) {
+                    console.error("Error in Facebook strategy:", err);
+                    return cb(err);
+                }
+            }
+        )
+    );
+};
+export const setupPassportSession = (passport) => {
     passport.serializeUser((user, cb) => {
         cb(null, user);
     });
 
     passport.deserializeUser((user, cb) => {
         cb(null, user);
-    });  
-}
-
-export default configPassport;
+    });
+};

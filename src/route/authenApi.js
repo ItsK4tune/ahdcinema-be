@@ -1,15 +1,20 @@
 import express from 'express'
 import passport from 'passport';
+import {setupPassportSession, configFacebookPassport, configGooglePassport} from '../config/passportConfig.js';
 import configRouter from '../config/routerConfig.js';
-import { DeleteUser, ForgotPassword, Login, Register } from '../controller/authenRelated.controller.js';
-import setSession from '../middleware/setSession.js'
-import checkSession from '../middleware/checkSession.js';
-import deleteSession from '../middleware/deleteSession.js';
+import { setSession } from '../middleware/setSession.js'
+import { checkSession }from '../middleware/checkSession.js';
+import { deleteSession } from '../middleware/deleteSession.js';
+import { DeleteUser, ForgotPassword, Login, Register, ChangePassword } from '../controller/authentication.controller.js';
+import { setCookie } from '../middleware/setCookie.js';
 
 let authRouter = express.Router();
-
 configRouter(authRouter);
 
+// Cấu hình Passport
+setupPassportSession(passport); // Thiết lập serialize/deserialize
+configGooglePassport(passport); // Cấu hình chiến lược Google
+configFacebookPassport(passport); // Cấu hình chiến lược Facebook
 //check (for test)
 authRouter.get('/health-check', (req, res) => {
     res.status(200).json("Check!");
@@ -34,7 +39,7 @@ authRouter.get('/check-session', checkSession)
 authRouter.post('/register', Register)
 
 //login 
-authRouter.post('/login', Login, setSession)
+authRouter.post('/login', Login, setSession, setCookie)
 
 //login by google, using OAuth
 authRouter.get("/google", passport.authenticate("google", {
@@ -44,7 +49,7 @@ authRouter.get("/google", passport.authenticate("google", {
 
 //callback 
 authRouter.get("/google/callback", passport.authenticate("google", {
-    successRedirect: "/auth", //sau này thay bằng trang chủ
+    successRedirect: "/", 
     failureRedirect: "/login",
 }));
 
@@ -56,7 +61,7 @@ authRouter.get("/facebook", passport.authenticate("facebook", {
 
 //callback
 authRouter.get("/facebook/callback", passport.authenticate("facebook", {
-    successRedirect: "/auth", //sau này thay bằng trang chủ
+    successRedirect: "/", 
     failureRedirect: "/login",
 }));
 
@@ -68,5 +73,8 @@ authRouter.get('/logout', checkSession, deleteSession)
 
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);
+
+//change password API
+authRouter.post('/change-password', checkSession, ChangePassword);
 
 export default authRouter;
