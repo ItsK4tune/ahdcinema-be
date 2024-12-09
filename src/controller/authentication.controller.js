@@ -1,4 +1,4 @@
-import { createUser, deleteUser, getUserExist, checkEmail, setNewPassword } from '../model/authentication.model.js';
+import { createUser, deleteUser, getUserExist, checkEmail, setNewPassword, getOldPassword, updateNewPassword } from '../model/authentication.model.js';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
@@ -163,16 +163,15 @@ export const changePassword = async (req, res) => {
 
     try {
         // 3. Lấy thông tin user hiện tại từ session 
-        const userId = req.user?.id || req.session?.user_id;
-        const currentLogBy= await getCurrentLogBy(userId)
+        if (req.user?.log_by !== 'local') {
+            return res.status(400).json({ error: "Password change is not available for Google/Facebook accounts." });
+        }
+        const userId = req.user?.id;
         // 4. Truy vấn mật khẩu hiện tại từ cơ sở dữ liệu
-        // const result = await db.query("SELECT password FROM users WHERE id = $1", [userId]);
-        // if (result.rows.length === 0) {
-        //     return res.status(404).json({ error: "User not found." });
-        // }
-
-        // const currentHashedPassword = result.rows[0].password;
         const currentHashedPassword = await getOldPassword(userId);
+        if (!currentHashedPassword) {
+            return res.status(404).json({ error: "User not found." });
+        }
         // 5. Kiểm tra mật khẩu cũ có đúng không
         const isMatch = await bcrypt.compare(oldPassword, currentHashedPassword);
         if (!isMatch) {
@@ -184,10 +183,15 @@ export const changePassword = async (req, res) => {
         const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
         // 7. Cập nhật mật khẩu mới vào cơ sở dữ liệu
-        await db.query("UPDATE users SET password = $1 WHERE id = $2", [hashedNewPassword, userId]);
-        await setNewPassword(hashedNewPassword, )
-        // 8. Phản hồi thành công
-        return res.status(200).json({ message: "Password updated successfully." });
+        await updateNewPassword(hashedNewPassword, userId )
+        // 8. Xóa phiên hiện tại và yêu cầu người dùng đăng nhập lại
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Error destroying session:", err);
+                return res.status(500).json({ error: "Failed to log out after password change." });
+            }
+            res.status(200).json({ message: "Password changed successfully. Please log in again." });
+        });
     } catch (err) {
         console.error("Error changing password:", err);
         return res.status(500).json({ error: "Internal server error." });

@@ -5,7 +5,7 @@ import configRouter from '../config/routerConfig.js';
 import { setSession } from '../middleware/setSession.js'
 import { checkSession }from '../middleware/checkSession.js';
 import { deleteSession } from '../middleware/deleteSession.js';
-import { DeleteUser, ForgotPassword, Login, Register, ChangePassword } from '../controller/authentication.controller.js';
+import { DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
 import { setCookie } from '../middleware/setCookie.js';
 
 let authRouter = express.Router();
@@ -74,7 +74,7 @@ authRouter.get('/logout', checkSession, deleteSession)
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);
 
-//change password API
-authRouter.post('/change-password', checkSession, ChangePassword);
+// //change password API
+// authRouter.post('/change-password', checkSession, ChangePassword);
 
 export default authRouter;

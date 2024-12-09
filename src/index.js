@@ -1,10 +1,12 @@
 import express from 'express';
 import session from 'express-session';
 import passport from "passport";
-import configPassport from './config/passportConfig.js';
+import {setupPassportSession, configFacebookPassport, configGooglePassport} from './config/passportConfig.js';
 import authRouter from './route/authenApi.js';
 import cinemaRouter from './route/cinemaAPI.js';
+import env from "dotenv";
 
+env.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -20,8 +22,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//passport config
-configPassport(passport);
+// Cấu hình Passport
+setupPassportSession(passport); // Thiết lập serialize/deserialize
+configGooglePassport(passport); // Cấu hình chiến lược Google
+configFacebookPassport(passport); // Cấu hình chiến lược Facebook
 
 //authen using platform's data
 app.use('/auth', authRouter);

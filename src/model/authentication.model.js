@@ -79,7 +79,26 @@ export const getUserID = async (username) => {
         console.error('Error getting user by username:', error);
     }
 }
+export const getOldPassword = async (userId) => {
+    try {
+        const [rows, field] = await db.query("SELECT user_password FROM Users WHERE user_id = $1", [userId]);
 
+        return rows.length ? rows[0].user_password : null;
+    } 
+    catch (error) {
+        console.error('Error getting user by username:', error);
+        throw error;
+    }
+}
+
+export const updateNewPassword = async (password, user_id) => {
+    try {
+        await db.query("UPDATE Users SET user_password = $1 WHERE user_id = $2", [password, user_id]);
+    } catch (error) {
+        console.error('Error creating new OAuth account:', error);
+        throw error; 
+    }
+};
 export const createOAuthAccount = async (name, email, logBy) => {
     try {
         const result = await db.query(
