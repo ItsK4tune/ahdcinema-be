@@ -1,6 +1,6 @@
 import { buyCard, getCardType, getUserMemberCard } from '../model/membership-page.model.js';
 
-export const GetCardType = async (res) => {
+export const GetCardType = async (req, res) => {
     try {
         const result = await getCardType();
         return res.status(200).json(result);

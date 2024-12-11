@@ -2,10 +2,9 @@ import db from '../config/connectDB.js';
 
 export const getUserExist = async (username) => {
     try {
-        const [rows, field] = await db.query('SELECT * FROM Users WHERE user_account = $1', [username]);
+        const result = await db.query('SELECT * FROM Users WHERE user_account = $1', [username]);
 
-        //check whether rows is null or not
-        return rows.length ? rows[0] : null;
+        return result.rows.length ? result.rows[0] : null
     } 
     catch (error) {
         console.error('Error getting user:', error);
@@ -15,7 +14,7 @@ export const getUserExist = async (username) => {
 export const checkEmail = async (email, logBy) => {
     try {
         const result = await db.query('SELECT * FROM Users WHERE email=$1 AND log_by=$2',[email, logBy]);
-        return result.rows[0] || null; 
+        return result.rows.length ? result.rows[0] : null
     } 
     catch (error) {
         console.error('Error getting user by email', error);
@@ -24,9 +23,9 @@ export const checkEmail = async (email, logBy) => {
 }
 export const setNewPassword = async (password, email) => {
     try {
-        await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3',[password, email, 'local']);
+        const result = await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3 returning *',[password, email, 'local']);
         // Kiểm tra xem có thay đổi dòng nào không
-        if (result.rowCount === 0) {
+        if (result.rows.length === 0) {
             console.warn(`No rows updated for email: ${email}`);
         }
     } 
@@ -41,14 +40,13 @@ export const createUser = async (username, password, email, fullname, phonenumbe
 
         await client.query('BEGIN');
 
-        await client.query(
-            'INSERT INTO Users (user_account, user_password, email, log_by) VALUES ($1, $2, $3, $4)',
+        const result=await client.query(
+            'INSERT INTO Users (user_account, user_password, email, log_by) VALUES ($1, $2, $3, $4) returning user_id',
             [username, password, email, 'local']
         );
-
         await client.query(
-            'INSERT INTO UserInfo(fullname, phonenumber) VALUES ($1, $2)',
-            [fullname, phonenumber]
+            'INSERT INTO UserInfo(user_id, fullname, phonenumber) VALUES ($1, $2, $3)',
+            [result.rows[0].user_id, fullname, phonenumber]
         );
 
         await client.query('COMMIT');
@@ -71,19 +69,28 @@ export const deleteUser = async (username, password) => {
 
 export const getUserID = async (username) => {
     try {
-        const [rows, field] = await db.query('SELECT user_id FROM Users WHERE user_account = $1', [username]);
+        const result= await db.query('SELECT user_id FROM Users WHERE user_account = $1', [username]);
 
-        return rows.length ? rows[0] : null;
+        return result.rows.length ? result.rows[0] : null
     } 
     catch (error) {
         console.error('Error getting user by username:', error);
     }
 }
+export const getCurrentLogBy = async (userId) => {
+    try {
+        const result = await db.query("SELECT log_by FROM Users WHERE user_id = $1", [userId]);
+        return result.rows[0].log_by || null;
+    } 
+    catch (error) {
+        console.error('Error getting user by username:', error);
+        throw error;
+    }
+}
 export const getOldPassword = async (userId) => {
     try {
-        const [rows, field] = await db.query("SELECT user_password FROM Users WHERE user_id = $1", [userId]);
-
-        return rows.length ? rows[0].user_password : null;
+        const result = await db.query("SELECT user_password FROM Users WHERE user_id = $1", [userId]);
+        return result.rows[0].user_password || null;
     } 
     catch (error) {
         console.error('Error getting user by username:', error);

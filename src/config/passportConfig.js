@@ -10,7 +10,7 @@ export const configGooglePassport = (passport) =>{
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "http://localhost:3000/auth/google/cinema",
+            callbackURL: "http://localhost:3000/auth/google/secrets",
             userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
         },
         async (accessToken, refreshToken, profile, cb) => {
@@ -37,7 +37,7 @@ export const configFacebookPassport = (passport) => {
             {
                 clientID: process.env.FACEBOOK_APP_ID,
                 clientSecret: process.env.FACEBOOK_APP_SECRET,
-                callbackURL: "http://localhost:3000/auth/facebook/cinema",
+                callbackURL: "http://localhost:3000/auth/facebook/secrets",
                 profileFields: ['id', 'displayName', 'photos', 'email'], // Đảm bảo yêu cầu email
             },
             async (accessToken, refreshToken, profile, cb) => {

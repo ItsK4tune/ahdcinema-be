@@ -1,9 +1,9 @@
-import { createUser, deleteUser, getUserExist, checkEmail, setNewPassword, getOldPassword, updateNewPassword } from '../model/authentication.model.js';
+import { createUser, deleteUser, getUserExist, checkEmail, setNewPassword, getOldPassword, updateNewPassword, getCurrentLogBy } from '../model/authentication.model.js';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 
-export const Login = async (req, res) => {
+export const Login = async (req, res, next) => {
     const { Username, Password } = req.body;
 
     // Kiểm tra đầu vào
@@ -28,7 +28,8 @@ export const Login = async (req, res) => {
         }
 
         console.log('Login successful');
-        return res.status(200).json({ message: 'Login successful', user: { username: user.user_account, email: user.email } });
+        req.user = { username: user.user_account, email: user.email};
+        next(); // Chuyển tiếp đến middleware tiếp theo
     } catch (error) {
         console.error('Error during login:', error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -40,7 +41,7 @@ export const Register = async (req, res) => {
     const { Username, Password, Email, Fullname, Phonenumber } = req.body;
 
     // Kiểm tra các trường bắt buộc
-    if (!Username || !Password || !Email) {
+    if (!Username || !Password || !Email || !Fullname || !Phonenumber) {
         console.log('Register failed: Missing some fields');
         return res.status(400).json({ message: 'All fields are required' });
     }
@@ -162,11 +163,13 @@ export const changePassword = async (req, res) => {
     }
 
     try {
+        const userId = req.cookies.user_id.user_id
+        const currentLogBy=await getCurrentLogBy(userId);
         // 3. Lấy thông tin user hiện tại từ session 
-        if (req.user?.log_by !== 'local') {
+        if (currentLogBy !== 'local') {
             return res.status(400).json({ error: "Password change is not available for Google/Facebook accounts." });
         }
-        const userId = req.user?.id;
+        
         // 4. Truy vấn mật khẩu hiện tại từ cơ sở dữ liệu
         const currentHashedPassword = await getOldPassword(userId);
         if (!currentHashedPassword) {

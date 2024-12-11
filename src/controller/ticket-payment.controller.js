@@ -35,7 +35,7 @@ export const GetCardInfo = async (req, res) => {
 }
 
 export const PostTicket = async (req, res) => {
-    const { wallet_balance, is_paid, ticket_id } = req.body;
+    const { wallet_balance, is_paid, ticket_id } = req.query;
 
     if ( wallet_balance == null|| is_paid == null|| !ticket_id) {
         console.log('PostTicket failed: Missing wallet_balance, is_paid or ticket_id parameter');
@@ -45,8 +45,8 @@ export const PostTicket = async (req, res) => {
         if (!is_paid){
             throw new Error(`Can't update ticket because it isn't being paid`);
         }
-        const result = await postTicket(wallet_balance, ticket_id);
-        return res.status(200).json(result);
+        await postTicket(wallet_balance, ticket_id);
+        return res.status(200).json({ message: `Payment completed successfully` });
     }
     catch (error) {
         console.log(`Error posting ticket: `, error);
@@ -55,7 +55,7 @@ export const PostTicket = async (req, res) => {
 }
 
 export const PostCard = async (req, res) => {
-    const { wallet_balance, is_paid, purchase_id } = req.body;
+    const { wallet_balance, is_paid, purchase_id } = req.query;
 
     if ( wallet_balance ==null || is_paid ==null || !purchase_id) {
         console.log('PostCard failed: Missing wallet_balance, is_paid or purchase_id parameter');
@@ -65,8 +65,8 @@ export const PostCard = async (req, res) => {
         if (!is_paid){
             throw new Error(`Can't update card because it isn't being paid`);
         }
-        const result = await postCard(wallet_balance, purchase_id);
-        return res.status(200).json(result);
+        await postCard(wallet_balance, purchase_id);
+        return res.status(200).json({ message: `Payment completed successfully` });
     }
     catch (error) {
         console.log(`Error posting ticket: `, error);

@@ -26,7 +26,7 @@ export const PostWallet = async (req, res) => {
     }
     try {
         await postWallet(topup_value, user_id);
-        return res.status(200);
+        return res.status(200).json({ message: `Payment completed successfully` });
     }
     catch (error) {
         console.log(`Error updating wallet: `, error);

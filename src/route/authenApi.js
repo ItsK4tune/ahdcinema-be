@@ -5,7 +5,7 @@ import configRouter from '../config/routerConfig.js';
 import { setSession } from '../middleware/setSession.js'
 import { checkSession }from '../middleware/checkSession.js';
 import { deleteSession } from '../middleware/deleteSession.js';
-import { DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
+import { DeleteUser, ForgotPassword, Login, Register, changePassword} from '../controller/authentication.controller.js';
 import { setCookie } from '../middleware/setCookie.js';
 
 let authRouter = express.Router();
@@ -39,7 +39,9 @@ authRouter.get('/check-session', checkSession)
 authRouter.post('/register', Register)
 
 //login 
-authRouter.post('/login', Login, setSession, setCookie)
+authRouter.post('/login', Login, setSession, setCookie, (req, res) => {
+    res.status(200).json({ message: 'Login successful', user: req.user });
+})
 
 //login by google, using OAuth
 authRouter.get("/google", passport.authenticate("google", {
@@ -74,7 +76,7 @@ authRouter.get('/logout', checkSession, deleteSession)
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);
 
-// //change password API
-// authRouter.post('/change-password', checkSession, ChangePassword);
+//change password API
+authRouter.post('/change-password', checkSession, changePassword);
 
 export default authRouter;
