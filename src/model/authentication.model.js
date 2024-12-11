@@ -11,7 +11,8 @@ export const getUserExist = async (username) => {
         console.error('Error getting user:', error);
         throw error;
     }
-}
+};
+
 export const checkEmail = async (email, logBy) => {
     try {
         const result = await db.query('SELECT * FROM Users WHERE email=$1 AND log_by=$2',[email, logBy]);
@@ -21,7 +22,8 @@ export const checkEmail = async (email, logBy) => {
         console.error('Error getting user by email', error);
         throw error;
     }
-}
+};
+
 export const setNewPassword = async (password, email) => {
     try {
         await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3',[password, email, 'local']);
@@ -34,7 +36,8 @@ export const setNewPassword = async (password, email) => {
         console.error('Error getting user by username:', error);
         throw error;
     }
-}
+};
+
 export const createUser = async (username, password, email, fullname, phonenumber) => {
     const client = await db.connect();
     try {
@@ -67,18 +70,18 @@ export const deleteUser = async (username, password) => {
     catch (error) {
         console.error('Error delete user:', error);
     }
-}
+};
 
 export const getUserID = async (username) => {
     try {
         const [rows, field] = await db.query('SELECT user_id FROM Users WHERE user_account = $1', [username]);
-
         return rows.length ? rows[0] : null;
     } 
     catch (error) {
         console.error('Error getting user by username:', error);
     }
-}
+};
+
 export const getOldPassword = async (userId) => {
     try {
         const [rows, field] = await db.query("SELECT user_password FROM Users WHERE user_id = $1", [userId]);
@@ -86,19 +89,20 @@ export const getOldPassword = async (userId) => {
         return rows.length ? rows[0].user_password : null;
     } 
     catch (error) {
-        console.error('Error getting user by username:', error);
+        console.error('Error getting password by userId:', error);
         throw error;
     }
-}
+};
 
 export const updateNewPassword = async (password, user_id) => {
     try {
         await db.query("UPDATE Users SET user_password = $1 WHERE user_id = $2", [password, user_id]);
     } catch (error) {
-        console.error('Error creating new OAuth account:', error);
+        console.error(`Error updating new password for ${user_id}:`, error);
         throw error; 
     }
 };
+
 export const createOAuthAccount = async (name, email, logBy) => {
     try {
         const result = await db.query(

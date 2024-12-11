@@ -4,6 +4,7 @@ import passport from "passport";
 import {setupPassportSession, configFacebookPassport, configGooglePassport} from './config/passportConfig.js';
 import authRouter from './route/authenApi.js';
 import cinemaRouter from './route/cinemaAPI.js';
+import adminRouter from './route/adminApi.js';
 import env from "dotenv";
 
 env.config();
@@ -30,8 +31,11 @@ configFacebookPassport(passport); // Cấu hình chiến lược Facebook
 //authen using platform's data
 app.use('/auth', authRouter);
 
-//API
+//theater api
 app.use('/api', cinemaRouter);
+
+//admin page
+app.use('/admin', adminRouter);
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Khoi tao server tai http://localhost:${PORT}`);

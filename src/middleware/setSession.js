@@ -1,12 +1,21 @@
-// export const setSession = (req, res, next) =>{
-//     req.session.user = {username: req.body.Username, password: req.body.Password};
-//     next();
-// }
-export const setSession = (req, res, next) => {
+export const setAdminSession = (req, res, next) => {
     const { Username } = req.body;
+
     if (!Username) {
         return res.status(400).json({ error: "Username is required" });
     }
-    req.session.user = { username: Username }; // Không lưu mật khẩu
+
+    req.session.user = { username: Username, isAdmin: true }; 
+    next();
+};
+
+export const setUserSession = (req, res, next) => {
+    const { Username } = req.body;
+
+    if (!Username) {
+        return res.status(400).json({ error: "Username is required" });
+    }
+
+    req.session.user = { username: Username, isAdmin: false }; 
     next();
 };

@@ -7,12 +7,13 @@
 //     }
 // }
 export const checkSession = (req, res, next) => {
-  const passportUser = req.session.passport?.user; // Passport stores user here
-  const sessionUser = req.session.user; // Custom user session
+  const passportUser = req.session.passport?.user;
+  const sessionUser = req.session.user; 
+
   if (passportUser || sessionUser) {
-      next(); // Session hợp lệ
+      next(); 
   } else {
-      console.warn("Session invalid or missing:", req.session); // Log lỗi chi tiết
+      console.warn("Session invalid or missing:", req.session);
       res.status(401).json({ active: false, message: 'You must log in first' });
   }
 };
