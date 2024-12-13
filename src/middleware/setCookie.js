@@ -2,9 +2,9 @@ import { getUserID } from '../model/authentication.model.js';
 
 
 // export const setCookie = async (req, res) => {
-//     const value = await getUserID(req.session.user?.username || req.session.passport?.username);
+//     const userId = await getUserID(req.session.user?.username || req.session.passport?.username);
     
-//     res.cookie('user_id', value, {
+//     res.cookie('user_id', userId, {
 //         httpOnly: true, // Makes the cookie accessible only by the web server
 //         secure: true, // Ensures the cookie is sent over HTTPS
 //         sameSite: 'Strict' // Controls cookie sending in cross-site requests
@@ -17,13 +17,14 @@ export const setCookie = async (req, res, next) => {
         if (!username) {
             return res.status(400).json({ error: "No user information in session" });
         }
-        const value = await getUserID(username);
-        console.log(value);
-        if (!value) {
+        const userId = await getUserID(username);
+        console.log(userId);
+        if (!userId) {
             return res.status(404).json({ error: "User not found" });
-        }
-        res.cookie('user_id', value, {
-            httpOnly: true,
+        } 
+        //setup như phía dưới để lấy được user_id trực tiếp từ FE (chỉ dùng cho BTL chứ thực tế không an toàn)
+        res.cookie('user_id', userId, {
+            httpOnly: false,
             secure: false,
             sameSite: 'Lax',
         });

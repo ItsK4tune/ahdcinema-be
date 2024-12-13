@@ -7,7 +7,6 @@ import { GetMovieContent } from '../controller/movie-detail.controller.js';
 import { GetMemberInfo, PostMemberInfo } from '../controller/member-info-page.controller.js';
 import { BuyCard, GetCardType, GetUserMemberCard } from '../controller/membership-page.controller.js';
 import { ChooseSeat, GetMovieCity_ticket, GetShowDate_ticket, GetShowTime_ticket, GetVoucher, PayTicket } from '../controller/ticket-purchase-page.controller.js';
-import { CardPuchase } from '../controller/membership-purchase.controller.js';
 import { GetCardInfo, GetTicketInfo, PostCard, PostTicket } from '../controller/ticket-payment.controller.js';
 import { GetHistory, GetWallet, PostWallet } from '../controller/log-page.controller.js';
 import { GetAll } from '../controller/main-page.controller.js';

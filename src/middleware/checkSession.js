@@ -22,7 +22,6 @@ export const checkSession = (req, res, next) => {
 
   const passportUser = req.session.passport?.user; // Passport stores user here
   const sessionUser = req.session.user; // Custom user session
-
   if (passportUser || sessionUser) {
     console.log('Session valid');
     next(); // Session hợp lệ
