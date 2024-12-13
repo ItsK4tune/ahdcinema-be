@@ -2,11 +2,11 @@ import express from 'express'
 import passport from 'passport';
 import {setupPassportSession, configFacebookPassport, configGooglePassport} from '../config/passportConfig.js';
 import configRouter from '../config/routerConfig.js';
-import { setSession } from '../middleware/setSession.js'
 import { checkSession }from '../middleware/checkSession.js';
 import { deleteSession } from '../middleware/deleteSession.js';
-import { DeleteUser, ForgotPassword, Login, Register, changePassword} from '../controller/authentication.controller.js';
-import { setCookie } from '../middleware/setCookie.js';
+import { changePassword, DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
+import { setUserSession } from '../middleware/setSession.js';
+import { setUserCookie } from '../middleware/setCookie.js';
 
 let authRouter = express.Router();
 configRouter(authRouter);
@@ -15,10 +15,11 @@ configRouter(authRouter);
 setupPassportSession(passport); // Thiết lập serialize/deserialize
 configGooglePassport(passport); // Cấu hình chiến lược Google
 configFacebookPassport(passport); // Cấu hình chiến lược Facebook
+
 //check (for test)
 authRouter.get('/health-check', (req, res) => {
     res.status(200).json("Check!");
-}) 
+});
 
 //set cookie (for test) 
 authRouter.get('/set-cookie', (req, res) => {
@@ -33,13 +34,13 @@ authRouter.get('/set-cookie', (req, res) => {
 });
 
 //check-session (for test)
-authRouter.get('/check-session', checkSession)
+authRouter.get('/check-session', checkSession);
 
 //register 
-authRouter.post('/register', Register)
+authRouter.post('/register', Register);
 
 //login 
-authRouter.post('/login', Login, setSession, setCookie, (req, res) => {
+authRouter.post('/login', Login, setUserSession, setUserCookie, (req, res) => {
     res.status(200).json({ message: 'Login successful', user: req.user });
 })
 

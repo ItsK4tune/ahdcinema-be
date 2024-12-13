@@ -6,21 +6,18 @@ import nodemailer from 'nodemailer';
 export const Login = async (req, res, next) => {
     const { Username, Password } = req.body;
 
-    // Kiểm tra đầu vào
     if (!Username || !Password) {
         console.log('Login failed: Missing username or password');
         return res.status(400).json({ message: 'Username and password are required' });
     }
 
     try {
-        // Lấy thông tin người dùng từ cơ sở dữ liệu
         const user = await getUserExist(Username);
         if (!user) {
             console.log('Login failed: User not found');
             return res.status(401).json({ message: 'Invalid username or password' });
         }
 
-        // So khớp mật khẩu đã mã hóa
         const isPasswordMatch = await bcrypt.compare(Password, user.user_password);
         if (!isPasswordMatch) {
             console.log('Login failed: Incorrect password');
@@ -80,7 +77,6 @@ export const Register = async (req, res) => {
     }
 };
 
-
 export const DeleteUser = async (req, res) => {
     const {Username, Password} = req.body;
 
@@ -106,7 +102,7 @@ export const DeleteUser = async (req, res) => {
         console.error('Error deleting user:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
 
 export const ForgotPassword = async (req, res) => {
     const {Email} = req.body;
@@ -119,13 +115,12 @@ export const ForgotPassword = async (req, res) => {
         const user = await checkEmail(Email, 'local');
         if (!user) {
             return res.status(404).json({ message: 'Email does not exist!' });
-          }
+        }
         const newPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Cập nhật mật khẩu mới
         await setNewPassword(hashedPassword, Email);
-        // send email with nodemailer
+
         const transporter = nodemailer.createTransport({
           service: 'gmail', 
           auth: {
@@ -147,7 +142,7 @@ export const ForgotPassword = async (req, res) => {
         console.error("Error during password reset:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
 
 export const changePassword = async (req, res) => {
     const { oldPassword, newPassword, confirmNewPassword } = req.body;
@@ -188,7 +183,7 @@ export const changePassword = async (req, res) => {
         // 7. Cập nhật mật khẩu mới vào cơ sở dữ liệu
         await updateNewPassword(hashedNewPassword, userId )
         // 8. Xóa phiên hiện tại và yêu cầu người dùng đăng nhập lại
-        req.session.destroy((err) => {
+        await req.session.destroy((err) => {
             if (err) {
                 console.error("Error destroying session:", err);
                 return res.status(500).json({ error: "Failed to log out after password change." });

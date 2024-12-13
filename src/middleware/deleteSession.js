@@ -1,11 +1,3 @@
-// export const deleteSession = (req, res) => {
-//     req.session.destroy((err) => {
-//         if (err) {
-//             console.error("Error destroying session:", err);
-//             res.status(500).send("Failed to log out.");
-//         }
-//     });
-// }
 export const deleteSession = (req, res) => {
     if (!req.session) {
         return res.status(400).json({ message: "No session to destroy" });
