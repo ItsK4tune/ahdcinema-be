@@ -32,3 +32,36 @@ export const addScreeningRoom = async (screeningroom_id, room_number, room_type,
         throw error;
     }
 };
+
+export const addShowTime = async (showtime_id, show_date, show_time, movie_id, cinema_id, screeningroom_id) => {
+    try {
+        await db.query(`insert into Showtimes (showtime_id, show_date, show_time, movie_id, cinema_id, screeningroom_id) 
+            values ($1, $2, $3, $4, $5, $6)`, [showtime_id, show_date, show_time, movie_id, cinema_id, screeningroom_id]);
+    } 
+    catch (error) {
+        console.error('Error adding show time', error);
+        throw error;
+    }
+};
+
+export const addSeat = async (seat_id, seat_number, is_available, seat_type_id, screeningroom_id) => {
+    try {
+        await db.query(`insert into Seats (seat_id, seat_number, is_available, seat_type_id, screeningroom_id) 
+            values ($1, $2, $3, $4, $5)`, [seat_id, seat_number, is_available, seat_type_id, screeningroom_id]);
+    } 
+    catch (error) {
+        console.error('Error adding seat', error);
+        throw error;
+    }
+};
+
+export const addVoucher = async (voucher_id, voucher_name, voucher_code, status, voucher_value) => {
+    try {
+        await db.query(`insert into Vouchers (voucher_id, voucher_name, voucher_code, status, voucher_value) 
+            values ($1, $2, $3, $4, $5)`, [voucher_id, voucher_name, voucher_code, status, voucher_value]);
+    } 
+    catch (error) {
+        console.error('Error adding voucher', error);
+        throw error;
+    }
+};

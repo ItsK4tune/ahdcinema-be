@@ -1,4 +1,4 @@
-import { addCinema, addMovie, addScreeningRoom } from "../model/adminCRUD.model";
+import { addCinema, addMovie, addScreeningRoom, addSeat, addShowTime, addVoucher } from "../model/adminCRUD.model";
 import { deleteUser, getUserExist } from "../model/authentication.model";
 
 export const DeleteUser = async (req, res) => {
@@ -80,7 +80,7 @@ export const AddScreeningRoom = async (req, res) => {
         await addScreeningRoom(screeningroom_id, room_number, room_type, seat_capacity, cinema_id);
 
         console.log(`Screening room: add screening room successfully`);
-        return res.status(200).json({ message: 'Add movie successfully' });
+        return res.status(200).json({ message: 'Add screening room successfully' });
     }
     catch (error) {
         console.error('Error adding screening room:', error);
@@ -88,3 +88,62 @@ export const AddScreeningRoom = async (req, res) => {
     }
 }
 
+export const AddShowTime = async (req, res) => {
+    const { showtime_id, show_date, show_time, movie_id, cinema_id, screeningroom_id } = req.body;
+
+    if (!showtime_id || !show_date || !show_time || !movie_id || !cinema_id || !screeningroom_id){
+        console.log('AddShowtime failed: Missing parameter');
+        return res.status(400).json({ message: 'Missing parameter' });
+    }
+
+    try {
+        await addShowTime(showtime_id, show_date, show_time, movie_id, cinema_id, screeningroom_id);
+
+        console.log(`Show time: add show time successfully`);
+        return res.status(200).json({ message: 'Add show time successfully' });
+    }
+    catch (error) {
+        console.error('Error adding show time:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const AddSeat = async (req, res) => {
+    const { seat_id, seat_number, is_available, seat_type_id, screeningroom_id } = req.body;
+
+    if (!seat_id || !seat_number || !seat_type_id || !screeningroom_id){
+        console.log('AddSeat failed: Missing parameter');
+        return res.status(400).json({ message: 'Missing parameter' });
+    }
+
+    try {
+        await addSeat(seat_id, seat_number, is_available | true, seat_type_id, screeningroom_id);
+
+        console.log(`Seat: add seat successfully`);
+        return res.status(200).json({ message: 'Add seat successfully' });
+    }
+    catch (error) {
+        console.error('Error adding seat:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const AddVoucher = async (req, res) => {
+    const { voucher_id, voucher_name, voucher_code, status, voucher_value } = req.body;
+
+    if (!voucher_id || !voucher_name || !voucher_code || !voucher_value){
+        console.log('AddVoucher failed: Missing parameter');
+        return res.status(400).json({ message: 'Missing parameter' });
+    }
+
+    try {
+        await addVoucher(voucher_id, voucher_name, voucher_code, status | 'Active', voucher_value);
+
+        console.log(`Voucher: add voucher successfully`);
+        return res.status(200).json({ message: 'Add voucher successfully' });
+    }
+    catch (error) {
+        console.error('Error adding voucher:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}

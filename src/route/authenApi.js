@@ -2,7 +2,7 @@ import express from 'express'
 import passport from 'passport';
 import {setupPassportSession, configFacebookPassport, configGooglePassport} from '../config/passportConfig.js';
 import configRouter from '../config/routerConfig.js';
-import { checkSession }from '../middleware/checkSession.js';
+import { checkSession, checkUserSession }from '../middleware/checkSession.js';
 import { deleteSession } from '../middleware/deleteSession.js';
 import { changePassword, DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
 import { setUserSession } from '../middleware/setSession.js';
@@ -17,12 +17,12 @@ configGooglePassport(passport); // Cấu hình chiến lược Google
 configFacebookPassport(passport); // Cấu hình chiến lược Facebook
 
 //check (for test)
-authRouter.get('/health-check', (req, res) => {
+authRouter.get('/health-check', (res) => {
     res.status(200).json("Check!");
 });
 
 //set cookie (for test) 
-authRouter.get('/set-cookie', (req, res) => {
+authRouter.get('/set-cookie', (res) => {
     // Setting a cookie
     res.cookie('test', 'test-value', { 
         maxAge: 900000, // Cookie expiration time in milliseconds
@@ -69,15 +69,15 @@ authRouter.get("/facebook/callback", passport.authenticate("facebook", {
 }));
 
 //delete API
-authRouter.post('/delete', checkSession, DeleteUser)
+authRouter.post('/delete', checkSession, checkUserSession, DeleteUser)
 
 //logout API
-authRouter.get('/logout', checkSession, deleteSession)
+authRouter.get('/logout', checkSession, checkUserSession, deleteSession)
 
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);
 
 //change password API
-authRouter.post('/change-password', checkSession, changePassword);
+authRouter.post('/change-password', checkSession, checkUserSession, changePassword);
 
 export default authRouter;
