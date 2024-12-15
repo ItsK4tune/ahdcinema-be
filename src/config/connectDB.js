@@ -10,6 +10,5 @@ const db = new pg.Pool({
     password: process.env.PG_PASSWORD,
     port: process.env.PG_PORT,
   });
-
 // Export a function to query the database
 export default db;

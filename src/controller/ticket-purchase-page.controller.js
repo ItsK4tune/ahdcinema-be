@@ -1,4 +1,4 @@
-import { chooseSeat, getMovieCity, getShowDate, getShowTime, getUserMemberCard, getVoucher, payTicket } from '../model/ticket-purchase-page-model.js';
+import { chooseSeat, getMovieCity, getShowDate, getShowTime, getVoucher, payTicket } from '../model/ticket-purchase-page-model.js';
 
 export const GetShowDate_ticket = async (req, res) => {
     const { movie_id } = req.query;
@@ -89,29 +89,11 @@ export const GetVoucher = async (req, res) => {
     }
 }
 
-export const GetUserMemberCard_ticket = async (req, res) => {
-    const { user_id } = req.query;
-
-    if (!user_id) {
-        console.log('GetUserMemberCard_ticket failed: Missing user_id parameter');
-        return res.status(400).json({ message: 'user_id parameter is required' });
-    }
-    try {
-        const result = await getUserMemberCard(user_id);
-        return res.status(200).json(result);
-    }
-    catch (error) {
-        console.log(`Error getting membercard: `, error);
-        res.status(500).json({ message: `Error getting membercard` });
-    }
-}
-
 export const PayTicket = async (req, res) => {
-    const { total_price, user_id, seat_id, showtime_id, voucher_id } = req.body;
-
+    const { total_price, user_id, seat_id, showtime_id, voucher_id } = req.query;
     if (total_price == null || !user_id || !seat_id || !showtime_id || !voucher_id) {
         console.log('PayTicket failed: Missing parameter');
-        return res.status(400).json({ message: 'total_price, user_id, seat_id, showttime_id and voucher_id parameter are required' });
+        return res.status(400).json({ message: 'total_price, user_id, seat_id, showtime_id and voucher_id parameter are required' });
     }
     try {
         const result = await payTicket(total_price, user_id, seat_id, showtime_id, voucher_id);

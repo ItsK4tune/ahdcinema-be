@@ -2,7 +2,7 @@ import { getMemberInfo, postUserInfo } from '../model/member-info-page.model.js'
 
 export const GetMemberInfo = async (req, res) => {
     const {user_id} = req.query;
-
+    console.log(user_id)
     if (!user_id) {
         console.log('GetMemberInfo failed: Missing user_id parameter');
         return res.status(400).json({ message: 'user_id parameter is required' });
@@ -21,6 +21,7 @@ export const GetMemberInfo = async (req, res) => {
 export const PostMemberInfo = async (req, res) => {
     const {user_id} = req.query;
     const updateData = req.body;
+    console.log(updateData)
     if (!user_id) {
         console.log('Missing user_id.');
         return res.status(400).json({ message: 'user_id is required' });

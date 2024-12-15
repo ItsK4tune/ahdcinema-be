@@ -2,11 +2,11 @@ import db from '../config/connectDB.js';
 
 export const getTicketInfo = async (ticket_id) => {
     try {
-        const [rows, field] = await db.query(`select * from Tickets JOIN Seats ON Tickets.seat_id = Seats.seat_id JOIN SeatType ON SeatType.seat_type_id = Seats.seat_type_id
-                                            JOIN ScreeningRoom ON ScreeningRoom.screeningroom_id=Seats.screeningroom_id JOIN Cinemas ON ScreeningRoom.cinema_id=Cinemas.cinema_id
+        const result = await db.query(`select * from Tickets JOIN Seats ON Tickets.seat_id = Seats.seat_id JOIN SeatType ON SeatType.seat_type_id = Seats.seat_type_id
+                                            JOIN Screeningrooms ON ScreeningRooms.screeningroom_id=Seats.screeningroom_id JOIN Cinemas ON ScreeningRooms.cinema_id=Cinemas.cinema_id
                                             JOIN Showtimes ON Showtimes.showtime_id=Tickets.showtime_id JOIN Movies ON Movies.movie_id=Showtimes.movie_id
                                             JOIN Vouchers ON Vouchers.voucher_id=Tickets.voucher_id JOIN UserInfo on UserInfo.user_id=Tickets.user_id where ticket_id = $1`, [ticket_id]);
-        return rows.length ? rows : null;
+        return result.rows.length ? result.rows[0] : null
     } 
     catch (error) {
         console.error('Error getting ticket info: ', error);
@@ -15,9 +15,9 @@ export const getTicketInfo = async (ticket_id) => {
 
 export const getCardInfo = async (purchase_id) => {
     try {
-        const [rows, field] = await db.query(`select * from CardPurchases join UserInfo on UserInfo.user_id=CardPurchases.user_id 
+        const result = await db.query(`select * from CardPurchases join UserInfo on UserInfo.user_id=CardPurchases.user_id 
                                                     join MemberCards on MemberCards.card_id=CardPurchases.card_id where purchase_id = $1`, [purchase_id]);
-        return rows.length ? rows : null;
+        return result.rows.length ? result.rows[0] : null
     } 
     catch (error) {
         console.error('Error getting card info: ', error);

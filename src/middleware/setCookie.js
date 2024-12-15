@@ -32,17 +32,18 @@ export const setUserCookie = async (req, res) => {
         if (!username) {
             return res.status(400).json({ error: "No user information in session" });
         }
-        const value = await getUserID(username);
-
-        if (!value) {
+        const userId = await getUserID(username);
+        console.log(userId);
+        if (!userId) {
             return res.status(404).json({ error: "User not found" });
-        }
-        await res.cookie('user_id', value, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'Strict',
+        } 
+        //setup như phía dưới để lấy được user_id trực tiếp từ FE (chỉ dùng cho BTL chứ thực tế không an toàn)
+        res.cookie('user_id', userId, {
+            httpOnly: false,
+            secure: false,
+            sameSite: 'Lax',
         });
-        return res.json({ message: "Cookie has been set!" });
+        next()
     } catch (error) {
         console.error("Error in setCookie:", error);
         res.status(500).json({ error: "Failed to set cookie" });

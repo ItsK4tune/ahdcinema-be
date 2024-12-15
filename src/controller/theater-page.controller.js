@@ -1,6 +1,6 @@
 import { getCinema, getCity, getShowTime } from '../model/theater-page.model.js';
 
-export const GetCity = async (res) => {
+export const GetCity = async (req, res) => {
     try {
         const result = await getCity();
         return res.status(200).json(result);
@@ -33,7 +33,7 @@ export const GetShowTime = async (req, res) => {
 
     if (!cinema_id || !show_date) {
         console.log('GetShowTime failed: Missing cinema_id, show_date parameter');
-        return res.status(400).json({ message: 'city_id and show_date parameter is required' });
+        return res.status(400).json({ message: 'cinema_id and show_date parameter is required' });
     }
 
     try {

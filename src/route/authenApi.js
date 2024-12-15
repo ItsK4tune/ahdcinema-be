@@ -40,7 +40,9 @@ authRouter.get('/check-session', checkSession);
 authRouter.post('/register', Register);
 
 //login 
-authRouter.post('/login', Login, setUserSession, setUserCookie)
+authRouter.post('/login', Login, setUserSession, setUserCookie, (req, res) => {
+    res.status(200).json({ message: 'Login successful', user: req.user });
+})
 
 //login by google, using OAuth
 authRouter.get("/google", passport.authenticate("google", {

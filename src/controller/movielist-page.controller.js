@@ -1,6 +1,6 @@
 import { getCurrentMovie, getUpcomingMovie } from '../model/movielist-page.model.js';
 
-export const GetCurrentMovie = async (res) => {
+export const GetCurrentMovie = async (req, res) => {
     try {
         const result = await getCurrentMovie();
         return res.status(200).json(result);
@@ -11,7 +11,7 @@ export const GetCurrentMovie = async (res) => {
     }
 }
 
-export const GetUpcomingMovie = async (res) => {
+export const GetUpcomingMovie = async (req, res) => {
     try {
         const result = await getUpcomingMovie();
         
