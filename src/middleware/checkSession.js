@@ -5,10 +5,9 @@ export const checkSession = (req, res, next) => {
   const passportUser = req.session.passport?.user; // Passport stores user here
   const sessionUser = req.session.user; // Custom user session
   if (passportUser || sessionUser) {
-    console.log('Session valid');
-    next(); // Session hợp lệ
+      next(); 
   } else {
-    console.warn("Session invalid or missing:", req.session); // Log lỗi chi tiết
-    res.status(401).json({ active: false, message: 'You must log in first' });
+      console.warn("Session invalid or missing:", req.session);
+      res.status(401).json({ active: false, message: 'You must log in first' });
   }
 };

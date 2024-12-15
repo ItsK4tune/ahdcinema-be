@@ -25,9 +25,9 @@ export const checkEmail = async (email, logBy) => {
 
 export const setNewPassword = async (password, email) => {
     try {
-        const result = await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3 returning *',[password, email, 'local']);
+        await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3',[password, email, 'local']);
         // Kiểm tra xem có thay đổi dòng nào không
-        if (result.rows.length === 0) {
+        if (result.rowCount === 0) {
             console.warn(`No rows updated for email: ${email}`);
         }
     } 

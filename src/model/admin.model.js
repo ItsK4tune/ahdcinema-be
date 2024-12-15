@@ -2,8 +2,8 @@ import db from '../config/connectDB.js';
 
 export const getAdminExist = async (username) => {
     try {
-        const [rows, field] = await db.query('SELECT * FROM Admins WHERE admin_account = $1', [username]);
-        return rows.length ? rows[0] : null;
+        const result = await db.query('SELECT * FROM Admins WHERE admin_account = $1', [username]);
+        return result.rows.length ? result.rows[0] : null;
     } 
     catch (error) {
         console.error('Error getting user:', error);
@@ -47,8 +47,8 @@ export const deleteAdmin = async (username, password) => {
 
 export const getOldPassword = async (admin_id) => {
     try {
-        const [rows, field] = await db.query("SELECT admin_password FROM Admins WHERE admin_id = $1", [admin_id]);
-        return rows.length ? rows[0].user_password : null;
+        const result = await db.query("SELECT admin_password FROM Admins WHERE admin_id = $1", [admin_id]);
+        return result.rows.length ? result.rows[0].user_password : null;
     } 
     catch (error) {
         console.error('Error getting password by adminId:', error);
@@ -67,8 +67,8 @@ export const updateNewPassword = async (password, admin_account) => {
 
 export const getAdminID = async (username) => {
     try {
-        const [rows, field] = await db.query('SELECT admin_id FROM Admins WHERE admin_account = $1', [username]);
-        return rows.length ? rows[0] : null;
+        const result = await db.query('SELECT admin_id FROM Admins WHERE admin_account = $1', [username]);
+        return result.rows.length ? result.rows[0] : null;
     } 
     catch (error) {
         console.error('Error getting admin by username:', error);

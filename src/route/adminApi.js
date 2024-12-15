@@ -1,7 +1,7 @@
 import express from 'express';
 import configRouter from '../config/routerConfig.js';
-import { checkSession } from '../middleware/checkSession.js';
-import { AdminLogin, AdminRegister, ChangePassword, DeleteAdmin, ForgotPassword } from '../controller/admin.controller.js';
+import { checkSession, checkAdminSession } from '../middleware/checkSession.js';
+import { AdminLogin, AdminRegister, ChangePassword, DeleteAdmin, DeleteUser, ForgotPassword } from '../controller/admin.controller.js';
 import { deleteSession } from '../middleware/deleteSession.js';
 import { setAdminSession } from '../middleware/setSession.js';
 import { setAdminCookie } from '../middleware/setCookie.js';
@@ -24,16 +24,21 @@ adminRouter.post('/login', AdminLogin, setAdminSession, setAdminCookie);
 adminRouter.post('/register', AdminRegister);
 
 //delete API
-adminRouter.post('/delete', checkSession, DeleteAdmin);
+adminRouter.post('/delete', checkSession, checkAdminSession, DeleteAdmin);
 
 //logout API
-adminRouter.get('/logout', checkSession, deleteSession);
+adminRouter.get('/logout', checkSession, checkAdminSession, deleteSession);
 
 //change password API
 adminRouter.post('/change-password', checkSession, ChangePassword);
 
 //forgot password API
 adminRouter.post('/forgot-password', ForgotPassword);
+
+//delete user
+adminRouter.post('/delete-user', checkSession, checkAdminSession, DeleteUser);
+
+adminRouter.post('movie', checkSession)
 
 export default adminRouter;
 

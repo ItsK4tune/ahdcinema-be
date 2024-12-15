@@ -175,4 +175,4 @@ export const ForgotPassword = async (req, res) => {
         console.error("Error during password reset:", error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+};
