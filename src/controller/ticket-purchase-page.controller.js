@@ -55,7 +55,7 @@ export const GetShowTime_ticket = async (req, res) => {
 }
 
 export const ChooseSeat = async (req, res) => {
-    const { screeningroom_id } = req.query;
+    const { screeningroom_id, show_date, show_time } = req.query;
 
     if (!screeningroom_id) {
         console.log('ChooseSeat failed: Missing screeningroom_id parameter');
@@ -63,7 +63,7 @@ export const ChooseSeat = async (req, res) => {
     }
 
     try {
-        const result = await chooseSeat(screeningroom_id);
+        const result = await chooseSeat(screeningroom_id, show_date, show_time);
         return res.status(200).json(result);
     }
     catch (error) {
@@ -73,14 +73,8 @@ export const ChooseSeat = async (req, res) => {
 }
 
 export const GetVoucher = async (req, res) => {
-    const { voucher_code } = req.query;
-
-    if (!voucher_code) {
-        console.log('GetVoucher failed: Missing voucher_code parameter');
-        return res.status(400).json({ message: 'voucher_code parameter is required' });
-    }
     try {
-        const result = await getVoucher(voucher_code);
+        const result = await getVoucher();
         return res.status(200).json(result);
     }
     catch (error) {

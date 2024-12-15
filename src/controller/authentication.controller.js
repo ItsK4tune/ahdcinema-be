@@ -145,15 +145,15 @@ export const ForgotPassword = async (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-    const { oldPassword, newPassword, confirmNewPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword} = req.body;
 
     // 1. Kiểm tra yêu cầu có đầy đủ thông tin không
-    if (!oldPassword || !newPassword || !confirmNewPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
         return res.status(400).json({ error: "All fields are required." });
     }
 
     // 2. Kiểm tra mật khẩu mới có khớp với xác nhận mật khẩu không
-    if (newPassword !== confirmNewPassword) {
+    if (newPassword !== confirmPassword) {
         return res.status(400).json({ error: "New password and confirm password do not match." });
     }
 
@@ -171,7 +171,7 @@ export const changePassword = async (req, res) => {
             return res.status(404).json({ error: "User not found." });
         }
         // 5. Kiểm tra mật khẩu cũ có đúng không
-        const isMatch = await bcrypt.compare(oldPassword, currentHashedPassword);
+        const isMatch = await bcrypt.compare(currentPassword, currentHashedPassword);
         if (!isMatch) {
             return res.status(400).json({ error: "Old password is incorrect." });
         }

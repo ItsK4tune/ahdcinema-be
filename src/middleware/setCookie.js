@@ -25,14 +25,10 @@ export const setAdminCookie = async (req, res) => {
     }
 };
 
-export const setUserCookie = async (req, res) => {
+export const setUserCookie = async (req, res, next) => {
     try {
-        const username = req.session.user?.username || req.session.passport?.user?.email;
-
-        if (!username) {
-            return res.status(400).json({ error: "No user information in session" });
-        }
-        const userId = await getUserID(username);
+        const username = req.session.user?.username;
+        const userId = await getUserID(username) || req.session.passport?.user;
         console.log(userId);
         if (!userId) {
             return res.status(404).json({ error: "User not found" });

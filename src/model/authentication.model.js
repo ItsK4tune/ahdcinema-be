@@ -101,6 +101,18 @@ export const getOldPassword = async (userId) => {
     }
 };
 
+export const getUserById = async (userId) => {
+    try {
+        const result = await db.query("SELECT * FROM Users WHERE user_id = $1", [userId]);
+        return result.rows.length ? result.rows[0] : null
+    } 
+    catch (error) {
+        console.error('Error getting user by userId:', error);
+        throw error;
+    }
+};
+
+
 export const updateNewPassword = async (password, user_id) => {
     try {
         await db.query("UPDATE Users SET user_password = $1 WHERE user_id = $2", [password, user_id]);
@@ -111,13 +123,21 @@ export const updateNewPassword = async (password, user_id) => {
 };
 
 export const createOAuthAccount = async (name, email, logBy) => {
+    const client = await db.connect();
     try {
-        const result = await db.query(
+        await client.query('BEGIN');
+        const result=await client.query(
             'INSERT INTO Users (user_account, email, log_by) VALUES ($1, $2, $3) RETURNING *',[name, email, logBy]
         );
+        await client.query(
+            'INSERT INTO UserInfo(user_id) VALUES ($1)',[result.rows[0].user_id]);
+        await client.query('COMMIT');
         return result.rows[0]; 
     } catch (error) {
+        await client.query('ROLLBACK');
         console.error('Error creating new OAuth account:', error);
         throw error; 
+    } finally {
+        client.release();
     }
 };

@@ -7,7 +7,7 @@ import { deleteSession } from '../middleware/deleteSession.js';
 import { changePassword, DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
 import { setUserSession } from '../middleware/setSession.js';
 import { setUserCookie } from '../middleware/setCookie.js';
-
+import { GetUserAccount } from '../controller/main-page.controller.js';
 let authRouter = express.Router();
 configRouter(authRouter);
 
@@ -20,6 +20,8 @@ configFacebookPassport(passport); // Cấu hình chiến lược Facebook
 authRouter.get('/health-check', (req, res) => {
     res.status(200).json("Check!");
 });
+
+
 
 //set cookie (for test) 
 authRouter.get('/set-cookie', (req, res) => {
@@ -50,29 +52,40 @@ authRouter.get("/google", passport.authenticate("google", {
     })
 );
 
-//callback 
-authRouter.get("/google/callback", passport.authenticate("google", {
-    successRedirect: "/", 
-    failureRedirect: "/login",
-}));
+// Callback sau khi đăng nhập Google
+authRouter.get(
+    "/google/callback", 
+    passport.authenticate("google", { failureRedirect: "http://localhost:3000/Login" }),
+    setUserCookie, 
+    (req, res) => {
+        res.redirect("http://localhost:3000");
+    }
+);
+
 
 //login by facebook, using OAuth
 authRouter.get("/facebook", passport.authenticate("facebook", {
-    scope: ["profile", "email"],
+    scope: ["email", "public_profile"],
     })
 );
 
-//callback
-authRouter.get("/facebook/callback", passport.authenticate("facebook", {
-    successRedirect: "/", 
-    failureRedirect: "/login",
-}));
+// Callback sau khi đăng nhập Facebook
+authRouter.get(
+    "/facebook/callback", 
+    passport.authenticate("facebook", { failureRedirect: "http://localhost:3000/Login" }),
+    setUserCookie, 
+    (req, res) => {
+        res.redirect("http://localhost:3000");
+    }
+);
+// API call in header
+authRouter.get('/header', checkSession, GetUserAccount)
 
 //delete API
 authRouter.post('/delete', checkSession, DeleteUser)
 
 //logout API
-authRouter.get('/logout', checkSession, deleteSession)
+authRouter.delete('/logout', checkSession, deleteSession)
 
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);

@@ -18,7 +18,7 @@ export const GetWallet = async (req, res) => {
 }
 
 export const PostWallet = async (req, res) => {
-    const { topup_value, user_id } = req.body;
+    const { topup_value, user_id } = req.query;
 
     if (!user_id || !topup_value) {
         console.log('PostWallet failed: Missing user_id or topup_value parameter');

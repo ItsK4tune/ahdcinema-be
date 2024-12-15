@@ -39,11 +39,12 @@ export const getShowTime = async (movie_id, show_date, city_id) => {
     }
 }
 
-export const chooseSeat = async (screeningroom_id) => {
+export const chooseSeat = async (screeningroom_id, show_date, show_time) => {
     try {
-        const result = await db.query(`select * from Seats join SeatType 
-                                                    on Seats.seat_type_id = SeatType.seat_type_id
-                                                    where screeningroom_id = $1`, [screeningroom_id]);
+        const result = await db.query(`select * from Seats join SeatType on Seats.seat_type_id = SeatType.seat_type_id
+                                                           join Screeningrooms on Screeningrooms.screeningroom_id=Seats.screeningroom_id
+                                                           join Showtimes on Showtimes.screeningroom_id=Screeningrooms.screeningroom_id
+                                                        where Screeningrooms.screeningroom_id = $1 and show_date=$2 and show_time=$3`, [screeningroom_id, show_date, show_time]);
         return result.rows.length ? result.rows : null
     } 
     catch (error) {
@@ -51,10 +52,10 @@ export const chooseSeat = async (screeningroom_id) => {
     }
 }
 
-export const getVoucher = async (voucher_code) => {
+export const getVoucher = async () => {
     try {
-        const result = await db.query(`select * from Vouchers where voucher_code = $1`, [voucher_code]);
-        return result.rows.length ? result.rows[0] : null
+        const result = await db.query(`select * from Vouchers`);
+        return result.rows.length ? result.rows : null
     } 
     catch (error) {
         console.error(`Error getting voucher: `, error);

@@ -9,7 +9,7 @@ import { BuyCard, GetCardType, GetUserMemberCard } from '../controller/membershi
 import { ChooseSeat, GetMovieCity_ticket, GetShowDate_ticket, GetShowTime_ticket, GetVoucher, PayTicket } from '../controller/ticket-purchase-page.controller.js';
 import { GetCardInfo, GetTicketInfo, PostCard, PostTicket } from '../controller/ticket-payment.controller.js';
 import { GetHistory, GetWallet, PostWallet } from '../controller/log-page.controller.js';
-import { GetAll } from '../controller/main-page.controller.js';
+import { GetHotMovie } from '../controller/main-page.controller.js';
 
 let cinemaRouter = express.Router();
 
@@ -18,7 +18,7 @@ configRouter(cinemaRouter);
 //no need authentication
 
 //Main webpage
-cinemaRouter.get('/', GetAll);
+cinemaRouter.get('/', GetHotMovie);
 
 //Theater webpage
 cinemaRouter.get('/cities', GetCity);

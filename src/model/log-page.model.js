@@ -3,7 +3,7 @@ import db from '../config/connectDB.js';
 export const getWallet = async (user_id) => {
     try {
         const result = await db.query(`select wallet_balance from UserInfo where user_id = $1`, [user_id]);
-        return result.rows.length ? result.rows[0] : null
+        return result.rows.length ? result.rows[0].wallet_balance : null
     } 
     catch (error) {
         console.error('Error getting wallet: ', error);
