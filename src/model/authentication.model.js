@@ -3,8 +3,6 @@ import db from '../config/connectDB.js';
 export const getUserExist = async (username) => {
     try {
         const [rows, field] = await db.query('SELECT * FROM Users WHERE user_account = $1', [username]);
-
-        //check whether rows is null or not
         return rows.length ? rows[0] : null;
     } 
     catch (error) {
@@ -27,7 +25,6 @@ export const checkEmail = async (email, logBy) => {
 export const setNewPassword = async (password, email) => {
     try {
         await db.query('UPDATE Users SET user_password=$1 WHERE email=$2 and log_by=$3',[password, email, 'local']);
-        // Kiểm tra xem có thay đổi dòng nào không
         if (result.rowCount === 0) {
             console.warn(`No rows updated for email: ${email}`);
         }
