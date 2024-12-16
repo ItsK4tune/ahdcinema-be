@@ -2,7 +2,7 @@ import express from 'express'
 import passport from 'passport';
 import {setupPassportSession, configFacebookPassport, configGooglePassport} from '../config/passportConfig.js';
 import configRouter from '../config/routerConfig.js';
-import { checkSession }from '../middleware/checkSession.js';
+import { checkSession, checkUserSession }from '../middleware/checkSession.js';
 import { deleteSession } from '../middleware/deleteSession.js';
 import { changePassword, DeleteUser, ForgotPassword, Login, Register} from '../controller/authentication.controller.js';
 import { setUserSession } from '../middleware/setSession.js';
@@ -79,18 +79,18 @@ authRouter.get(
     }
 );
 // API call in header
-authRouter.get('/header', checkSession, GetUserAccount)
+authRouter.get('/header', checkSession, checkUserSession, GetUserAccount)
 
 //delete API
-authRouter.post('/delete', checkSession, DeleteUser)
+authRouter.post('/delete', checkSession, checkUserSession, DeleteUser)
 
 //logout API
-authRouter.delete('/logout', checkSession, deleteSession)
+authRouter.delete('/logout', checkSession, checkUserSession, deleteSession)
 
 //forgot password API
 authRouter.post('/forgot-password', ForgotPassword);
 
 //change password API
-authRouter.post('/change-password', checkSession, changePassword);
+authRouter.post('/change-password', checkSession, checkUserSession, changePassword);
 
 export default authRouter;

@@ -1,6 +1,6 @@
 import express from 'express';
 import configRouter from '../config/routerConfig.js';
-import { checkSession } from '../middleware/checkSession.js';
+import { checkSession, checkUserSession } from '../middleware/checkSession.js';
 import { GetCinema, GetCity, GetShowTime } from '../controller/theater-page.controller.js';
 import { GetCurrentMovie, GetUpcomingMovie } from '../controller/movielist-page.controller.js';
 import { GetMovieContent } from '../controller/movie-detail.controller.js';
@@ -38,38 +38,38 @@ cinemaRouter.get('/movie-content', GetMovieContent);
 //need authentication
 
 //Member info webpage
-cinemaRouter.get('/member-info', checkSession, GetMemberInfo);
-cinemaRouter.post('/member-info',checkSession, PostMemberInfo);
+cinemaRouter.get('/member-info', checkSession, checkUserSession, GetMemberInfo);
+cinemaRouter.post('/member-info',checkSession, checkUserSession, PostMemberInfo);
 
 //Membership webpage
-cinemaRouter.get('/card-types', checkSession, GetCardType);
-cinemaRouter.get('/user-membercard', checkSession, GetUserMemberCard);
-cinemaRouter.post('/buycard', checkSession, BuyCard);
+cinemaRouter.get('/card-types', checkSession, checkUserSession, GetCardType);
+cinemaRouter.get('/user-membercard', checkSession, checkUserSession, GetUserMemberCard);
+cinemaRouter.post('/buycard', checkSession, checkUserSession, BuyCard);
 
 // //Membership purchase webpage
 // cinemaRouter.post('/card-purchase', checkSession, CardPuchase);
 
 //Movie ticket purchase webpage
-cinemaRouter.get('/buyticket/movie-showdates', checkSession, GetShowDate_ticket);
-cinemaRouter.get('/buyticket/movie-cities', checkSession, GetMovieCity_ticket);
-cinemaRouter.get('/buyticket/movie-showtimes', checkSession, GetShowTime_ticket);
+cinemaRouter.get('/buyticket/movie-showdates', checkSession, checkUserSession, GetShowDate_ticket);
+cinemaRouter.get('/buyticket/movie-cities', checkSession, checkUserSession, GetMovieCity_ticket);
+cinemaRouter.get('/buyticket/movie-showtimes', checkSession, checkUserSession, GetShowTime_ticket);
 
-cinemaRouter.get('/buyticket/choose-seats', checkSession, ChooseSeat);
+cinemaRouter.get('/buyticket/choose-seats', checkSession, checkUserSession, ChooseSeat);
 
-cinemaRouter.get('/buyticket/vouchers', checkSession, GetVoucher);
-cinemaRouter.get('/buyticket/get-membercard', checkSession, GetUserMemberCard);
-cinemaRouter.post('/buyticket/payment', checkSession, PayTicket);
+cinemaRouter.get('/buyticket/vouchers', checkSession, checkUserSession, GetVoucher);
+cinemaRouter.get('/buyticket/get-membercard', checkSession, checkUserSession, GetUserMemberCard);
+cinemaRouter.post('/buyticket/payment', checkSession, checkUserSession, PayTicket);
 
 //Ticket payment webpage
-cinemaRouter.get('/payment/ticket', checkSession, GetTicketInfo);
-cinemaRouter.get('/payment/card', checkSession, GetCardInfo);
-cinemaRouter.post('/payment/ticket', checkSession, PostTicket);
-cinemaRouter.post('/payment/card', checkSession, PostCard);
+cinemaRouter.get('/payment/ticket', checkSession, checkUserSession, GetTicketInfo);
+cinemaRouter.get('/payment/card', checkSession, checkUserSession, GetCardInfo);
+cinemaRouter.post('/payment/ticket', checkSession, checkUserSession, PostTicket);
+cinemaRouter.post('/payment/card', checkSession, checkUserSession, PostCard);
 
 //Log webpage
-cinemaRouter.get('/mywallet', checkSession, GetWallet);
-cinemaRouter.post('/top-up-wallet', checkSession, PostWallet);
-cinemaRouter.get('/payment-history', checkSession, GetHistory);
+cinemaRouter.get('/mywallet', checkSession, checkUserSession, GetWallet);
+cinemaRouter.post('/top-up-wallet', checkSession, checkUserSession, PostWallet);
+cinemaRouter.get('/payment-history', checkSession, checkUserSession, GetHistory);
 
 
 export default cinemaRouter;

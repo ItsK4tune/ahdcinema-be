@@ -14,9 +14,9 @@ export const setAdminCookie = async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
         await res.cookie('admin_id', value, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'Strict',
+            httpOnly: false,
+            secure: false,
+            sameSite: 'Lax',
         });
         return res.json({ message: "Cookie has been set!" });
     } catch (error) {
