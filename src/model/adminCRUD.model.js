@@ -144,3 +144,231 @@ export const getVoucher = async () => {
         throw error;
     }
 };
+
+export const updateMovie = async (movie_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(movie_id);
+        const query = `UPDATE Movies SET ${fields.join(', ')} WHERE movie_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating movie ${movie_id}: `, error);
+        return false;
+    }
+};
+
+export const updateCinema = async (cinema_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(cinema_id);
+        const query = `UPDATE Cinemas SET ${fields.join(', ')} WHERE cinema_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating cinema ${cinema_id}: `, error);
+        return false;
+    }
+};
+
+export const updateScreeningroom = async (screeningroom_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(screeningroom_id);
+        const query = `UPDATE ScreeningRooms SET ${fields.join(', ')} WHERE screeningroom_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating screening room ${screeningroom_id}: `, error);
+        return false;
+    }
+};
+
+export const updateShowTime = async (showtime_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(showtime_id);
+        const query = `UPDATE Showtimes SET ${fields.join(', ')} WHERE showtime_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating show time ${showtime_id}: `, error);
+        return false;
+    }
+};
+
+export const updateSeat = async (seat_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(seat_id);
+        const query = `UPDATE Seats SET ${fields.join(', ')} WHERE seat_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating seat ${seat_id}: `, error);
+        return false;
+    }
+};
+
+export const updateVoucher = async (voucher_id, updateData) => {
+    if (Object.keys(updateData).length === 0) {
+        console.log('No data to update.');
+        return false; 
+    }
+    try {
+        const fields = [];
+        const values = [];
+        let index = 1; 
+        for (const [key, value] of Object.entries(updateData)) {
+            fields.push(`${key} = $${index}`);
+            values.push(value);
+            index++;
+        }
+
+        values.push(voucher_id);
+        const query = `UPDATE Vouchers SET ${fields.join(', ')} WHERE voucher_id = $${index} returning *`;
+
+        const result = await db.query(query, values);
+        return result.rowCount > 0;
+    } catch (error) {
+        console.error(`Error updating voucher ${voucher_id}: `, error);
+        return false;
+    }
+};
+
+export const deleteMovie = async (movie_id) => {
+    try {
+        const result = await db.query(`delete from Movies where movie_id = $1`, [movie_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete movie:', error);
+        throw error;
+    }
+};
+
+export const deleteCinema = async (cinema_id) => {
+    try {
+        const result = await db.query(`delete from Cinemas where cinema_id = $1`, [cinema_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete cinema:', error);
+        throw error;
+    }
+};
+
+export const deleteScreeningRoom = async (screeningroom_id) => {
+    try {
+        const result = await db.query(`delete from ScreeningRooms where screeningroom_id = $1`, [screeningroom_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete screening room:', error);
+        throw error;
+    }
+};
+
+export const deleteShowTime = async (showtime_id) => {
+    try {
+        const result = await db.query(`delete from Showtimes where showtime_id = $1`, [showtime_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete show time:', error);
+        throw error;
+    }
+};
+
+export const deleteSeat = async (seat_id) => {
+    try {
+        const result = await db.query(`delete from Seats where seat_id = $1`, [seat_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete seat:', error);
+        throw error;
+    }
+};
+
+export const deleteVoucher = async (voucher_id) => {
+    try {
+        const result = await db.query(`delete from Vouchers where voucher_id = $1`, [voucher_id]);
+
+        return result.rows.length ? result.rows : null
+    } 
+    catch (error) {
+        console.error('Error delete voucher:', error);
+        throw error;
+    }
+};

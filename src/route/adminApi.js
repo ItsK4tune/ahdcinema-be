@@ -46,28 +46,34 @@ adminRouter.post('/movie', checkSession, checkAdminSession, AddMovie);
 adminRouter.get('/movie', checkSession, checkAdminSession, GetMovie);
 adminRouter.put('/movie', checkSession, checkAdminSession, UpdateMovie);
 adminRouter.delete('/movie', checkSession, checkAdminSession, DeleteMovie);
+
 //crud cinema
 adminRouter.post('/cinema', checkSession, checkAdminSession, AddCinema);
 adminRouter.get('/cinema', checkSession, checkAdminSession, GetCinema);
 adminRouter.put('/cinema', checkSession, checkAdminSession, UpdateCinema);
 adminRouter.delete('/cinema', checkSession, checkAdminSession, DeleteCinema);
+
 //crud screening room
 adminRouter.post('/screeningroom', checkSession, checkAdminSession, AddScreeningRoom);
 adminRouter.get('/screeningroom', checkSession, checkAdminSession, GetScreeningroom);
 adminRouter.put('/screeningroom', checkSession, checkAdminSession, UpdateScreeningroom);
 adminRouter.delete('/screeningroom', checkSession, checkAdminSession, DeleteScreeningroom);
+
 //crud show time
 adminRouter.post('/showtime', checkSession, checkAdminSession, AddShowTime);
 adminRouter.get('/showtime', checkSession, checkAdminSession, GetShowTime);
 adminRouter.put('/showtime', checkSession, checkAdminSession, UpdateShowTime);
 adminRouter.delete('/showtime', checkSession, checkAdminSession, DeleteShowTime);
+
 //crud seat
 adminRouter.post('/seat', checkSession, checkAdminSession, AddSeat);
 adminRouter.get('/seat', checkSession, checkAdminSession, GetSeat);
+
 //crud voucher
 adminRouter.post('/voucher', checkSession, checkAdminSession, AddVoucher);
 adminRouter.get('/voucher', checkSession, checkAdminSession, GetVoucher);
 adminRouter.put('/voucher', checkSession, checkAdminSession, UpdateVoucher);
 adminRouter.delete('/voucher', checkSession, checkAdminSession, DeleteVoucher);
+
 export default adminRouter;
 
